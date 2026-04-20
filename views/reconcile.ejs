@@ -222,56 +222,53 @@
           <!-- Meals header row -->
           <tr class="section-header-row">
             <td colspan="4" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
-              Meals &nbsp;<span style="font-weight:400;font-size:10px">(In-State qty × rate + Out-of-State qty × rate)</span>
+              Meals &nbsp;<span style="font-weight:400;font-size:10px">— fixed per diem, carried over from request</span>
             </td>
           </tr>
 
           <!-- Breakfast -->
-          <tr>
+          <tr class="perdiem-row">
             <td class="row-label">Breakfast</td>
             <td class="est-cell"><span id="est_breakfast">—</span></td>
             <td>
-              <div class="meal-inputs">
-                <input id="breakfastIS2" data-field type="text" placeholder="IS#" oninput="recalcMeal('breakfast')">
-                <input id="breakfastISRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('breakfast')">
-                <input id="breakfastOS2" data-field type="text" placeholder="OS#" oninput="recalcMeal('breakfast')">
-                <input id="breakfastOSRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('breakfast')">
-                <input id="breakfastTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly>
-              </div>
+              <span id="meal_breakfast_detail" class="meal-perdiem-detail"></span>
+              <input id="breakfastIS2" data-field type="hidden">
+              <input id="breakfastISRate2" data-field type="hidden">
+              <input id="breakfastOS2" data-field type="hidden">
+              <input id="breakfastOSRate2" data-field type="hidden">
+              <input id="breakfastTotal2" data-field type="hidden">
             </td>
-            <td class="var-cell"><span id="var_breakfast" class="var-zero">—</span></td>
+            <td class="var-cell"><span class="perdiem-badge">Per Diem</span></td>
           </tr>
 
           <!-- Lunch -->
-          <tr>
+          <tr class="perdiem-row">
             <td class="row-label">Lunch</td>
             <td class="est-cell"><span id="est_lunch">—</span></td>
             <td>
-              <div class="meal-inputs">
-                <input id="lunchIS2" data-field type="text" placeholder="IS#" oninput="recalcMeal('lunch')">
-                <input id="lunchISRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('lunch')">
-                <input id="lunchOS2" data-field type="text" placeholder="OS#" oninput="recalcMeal('lunch')">
-                <input id="lunchOSRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('lunch')">
-                <input id="lunchTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly>
-              </div>
+              <span id="meal_lunch_detail" class="meal-perdiem-detail"></span>
+              <input id="lunchIS2" data-field type="hidden">
+              <input id="lunchISRate2" data-field type="hidden">
+              <input id="lunchOS2" data-field type="hidden">
+              <input id="lunchOSRate2" data-field type="hidden">
+              <input id="lunchTotal2" data-field type="hidden">
             </td>
-            <td class="var-cell"><span id="var_lunch" class="var-zero">—</span></td>
+            <td class="var-cell"><span class="perdiem-badge">Per Diem</span></td>
           </tr>
 
           <!-- Supper -->
-          <tr>
+          <tr class="perdiem-row">
             <td class="row-label">Supper</td>
             <td class="est-cell"><span id="est_supper">—</span></td>
             <td>
-              <div class="meal-inputs">
-                <input id="supperIS2" data-field type="text" placeholder="IS#" oninput="recalcMeal('supper')">
-                <input id="supperISRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('supper')">
-                <input id="supperOS2" data-field type="text" placeholder="OS#" oninput="recalcMeal('supper')">
-                <input id="supperOSRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('supper')">
-                <input id="supperTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly>
-              </div>
+              <span id="meal_supper_detail" class="meal-perdiem-detail"></span>
+              <input id="supperIS2" data-field type="hidden">
+              <input id="supperISRate2" data-field type="hidden">
+              <input id="supperOS2" data-field type="hidden">
+              <input id="supperOSRate2" data-field type="hidden">
+              <input id="supperTotal2" data-field type="hidden">
             </td>
-            <td class="var-cell"><span id="var_supper" class="var-zero">—</span></td>
+            <td class="var-cell"><span class="perdiem-badge">Per Diem</span></td>
           </tr>
 
           <!-- Other 1 -->

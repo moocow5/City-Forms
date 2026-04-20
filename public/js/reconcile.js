@@ -16,6 +16,18 @@ const EST = {
   other1: 0, other2: 0, total: 0
 };
 
+// ── Build meal per diem detail string ──
+function mealDetail(fd, meal) {
+  const is  = pf(fd[`${meal}IS`]);
+  const isr = pf(fd[`${meal}ISRate`]);
+  const os  = pf(fd[`${meal}OS`]);
+  const osr = pf(fd[`${meal}OSRate`]);
+  const parts = [];
+  if (is)  parts.push(`${is} IS × $${isr.toFixed(2)}`);
+  if (os)  parts.push(`${os} OS × $${osr.toFixed(2)}`);
+  return parts.join("  +  ") || "—";
+}
+
 // ── Load estimated display spans ──
 function loadEstimates(fd) {
   EST.reg       = pf(fd.regCheck);
@@ -39,6 +51,21 @@ function loadEstimates(fd) {
   sv("est_other1",    EST.other1    ? fmtMoney(EST.other1)    : "—");
   sv("est_other2",    EST.other2    ? fmtMoney(EST.other2)    : "—");
   sv("est_total",     EST.total     ? fmtMoney(EST.total)     : "—");
+
+  // Show per diem detail text
+  ["breakfast", "lunch", "supper"].forEach((meal) => {
+    const el = $(`meal_${meal}_detail`);
+    if (el) el.textContent = mealDetail(fd, meal);
+  });
+}
+
+// ── Copy meal per diem values into section-2 hidden fields for PDF ──
+function copyMealPerDiem(fd) {
+  ["breakfast", "lunch", "supper"].forEach((meal) => {
+    ["IS", "ISRate", "OS", "OSRate", "Total"].forEach((sfx) => {
+      sv(`${meal}${sfx}2`, fd[`${meal}${sfx}`] || "");
+    });
+  });
 }
 
 // ── innerHTML helper for span elements ──
@@ -70,13 +97,6 @@ function recalcMileage() {
   recalcAll();
 }
 
-// ── Calc: Individual meal ──
-function recalcMeal(meal) {
-  const total = pf(gv(`${meal}IS2`)) * pf(gv(`${meal}ISRate2`))
-              + pf(gv(`${meal}OS2`)) * pf(gv(`${meal}OSRate2`));
-  sv(`${meal}Total2`, fmt(total));
-  recalcAll();
-}
 
 // ── Recalc everything ──
 function recalcAll() {
@@ -85,7 +105,7 @@ function recalcAll() {
     travel:    pf(gv("travel2")),
     lodging:   pf(gv("lodgingTotal2")),
     mileage:   pf(gv("mileageTotal2")),
-    breakfast: pf(gv("breakfastTotal2")),
+    breakfast: pf(gv("breakfastTotal2")), // hidden, set from per diem
     lunch:     pf(gv("lunchTotal2")),
     supper:    pf(gv("supperTotal2")),
     other1:    pf(gv("other1Total2")),
@@ -96,17 +116,14 @@ function recalcAll() {
   sv("totalExpense", fmt(total));
   sv("amountDue", fmt(total - pf(gv("amountPaid")) - pf(gv("advanceMoney2"))));
 
-  // Update variance column
-  setVariance("var_reg",       actuals.reg,       EST.reg);
-  setVariance("var_travel",    actuals.travel,    EST.travel);
-  setVariance("var_lodging",   actuals.lodging,   EST.lodging);
-  setVariance("var_mileage",   actuals.mileage,   EST.mileage);
-  setVariance("var_breakfast", actuals.breakfast, EST.breakfast);
-  setVariance("var_lunch",     actuals.lunch,     EST.lunch);
-  setVariance("var_supper",    actuals.supper,    EST.supper);
-  setVariance("var_other1",    actuals.other1,    EST.other1);
-  setVariance("var_other2",    actuals.other2,    EST.other2);
-  setVariance("var_total",     total,             EST.total);
+  // Variance only on reconcilable rows (not meals — those are fixed per diem)
+  setVariance("var_reg",     actuals.reg,     EST.reg);
+  setVariance("var_travel",  actuals.travel,  EST.travel);
+  setVariance("var_lodging", actuals.lodging, EST.lodging);
+  setVariance("var_mileage", actuals.mileage, EST.mileage);
+  setVariance("var_other1",  actuals.other1,  EST.other1);
+  setVariance("var_other2",  actuals.other2,  EST.other2);
+  setVariance("var_total",   total,           EST.total);
 }
 
 // ── SP panel toggle ──
@@ -162,8 +179,9 @@ async function pullIntoForm() {
     // Pre-fill advance money in section-2
     if (fd.advanceMoney) sv("advanceMoney2", fd.advanceMoney);
 
-    // Load estimated spans and reset variances
+    // Load estimated spans, copy per diem meals, reset variances
     loadEstimates(fd);
+    copyMealPerDiem(fd);
     recalcAll();
 
     $("tripSummaryCard").style.display = "";
