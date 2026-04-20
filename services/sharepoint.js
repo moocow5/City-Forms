@@ -193,29 +193,26 @@ function mapFormToFields(formData) {
   const n = (v) => (v === "" || v == null) ? null : parseFloat(v) || null;
   const s = (v) => v || null;
 
+  // Omit SharePoint calculated/read-only fields: Hotel_x0020_Cost,
+  // Mileage_x0020_Cost, Breakfast/Lunch/Dinner_x0020_Cost,
+  // Total_x0020_Requested_x0020_Amou — SP computes these automatically.
   return {
-    Title:                              s(formData.purpose),
-    ReasonForTravel:                    s(formData.purpose2),
-    Department:                         s(formData.department),
-    TravelStartDate:                    s(formData.fromDate) ? new Date(formData.fromDate).toISOString() : null,
-    TravelEndDate:                      s(formData.toDate)   ? new Date(formData.toDate).toISOString()   : null,
-    EstimatedAirfare:                   n(formData.travelCheck),
-    Hotel_x0020_Rate:                   n(formData.lodgingNights),
-    EstimatedHotelCost:                 n(formData.lodgingRate),
-    Hotel_x0020_Cost:                   n(formData.lodgingTotal),
-    Mileage:                            s(formData.mileageMiles),
-    MileageRate:                        n(formData.mileageRate),
-    Mileage_x0020_Cost:                 n(formData.mileageTotal),
-    Breakfast:                          n(formData.breakfastIS),
-    BreakfastRate:                      n(formData.breakfastISRate),
-    Breakfast_x0020_Cost:               n(formData.breakfastTotal),
-    Lunch:                              n(formData.lunchIS),
-    LunchRate:                          n(formData.lunchISRate),
-    Lunch_x0020_Cost:                   n(formData.lunchTotal),
-    Dinner:                             n(formData.supperIS),
-    DinnerRate:                         n(formData.supperISRate),
-    Dinner_x0020_Cost:                  n(formData.supperTotal),
-    Total_x0020_Requested_x0020_Amou:   n(formData.estimatedTotal),
+    Title:            s(formData.purpose),
+    ReasonForTravel:  s(formData.purpose2),
+    Department:       s(formData.department),
+    TravelStartDate:  s(formData.fromDate) ? new Date(formData.fromDate).toISOString() : null,
+    TravelEndDate:    s(formData.toDate)   ? new Date(formData.toDate).toISOString()   : null,
+    EstimatedAirfare: n(formData.travelCheck),
+    Hotel_x0020_Rate: n(formData.lodgingNights),
+    EstimatedHotelCost: n(formData.lodgingRate),
+    Mileage:          s(formData.mileageMiles),
+    MileageRate:      n(formData.mileageRate),
+    Breakfast:        n(formData.breakfastIS),
+    BreakfastRate:    n(formData.breakfastISRate),
+    Lunch:            n(formData.lunchIS),
+    LunchRate:        n(formData.lunchISRate),
+    Dinner:           n(formData.supperIS),
+    DinnerRate:       n(formData.supperISRate),
   };
 }
 
