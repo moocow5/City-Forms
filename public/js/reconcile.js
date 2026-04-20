@@ -4,7 +4,7 @@
 
 const $ = (id) => document.getElementById(id);
 const gv = (id) => { const el = $(id); return el ? el.value : ""; };
-const sv = (id, v) => { const el = $(id); if (el) el.value = v; };
+const sv = (id, v) => { const el = $(id); if (!el) return; if (el.tagName === "SPAN") el.textContent = v; else el.value = v; };
 const pf = (v) => parseFloat(v) || 0;
 const fmt = (n) => (isNaN(n) || n === 0) ? "" : n.toFixed(2);
 const fmtMoney = (n) => isNaN(n) ? "—" : `$${n.toFixed(2)}`;
@@ -246,11 +246,3 @@ function clearActuals() {
   $("pdfStatus").innerHTML = "";
 }
 
-// ── Override sv for span elements in estimated column ──
-const _sv = sv;
-function sv(id, v) {
-  const el = $(id);
-  if (!el) return;
-  if (el.tagName === "SPAN") { el.textContent = v; }
-  else { el.value = v; }
-}
