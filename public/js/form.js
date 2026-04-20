@@ -102,11 +102,19 @@ async function previewItem() {
   }
 }
 
+// ── Track the currently loaded SP item id ──
+let _loadedItemId = null;
+
 // ── Pull SP data into form ──
 async function pullIntoForm() {
   const sel = $("spItemSelect");
   const status = $("spStatus");
-  if (!sel.value) { status.innerHTML = ''; return; }
+  if (!sel.value) {
+    _loadedItemId = null;
+    const btn = $("btnUpdate"); if (btn) { btn.disabled = true; btn.title = "Load a request from SharePoint first"; }
+    status.innerHTML = '';
+    return;
+  }
 
   status.innerHTML = '<div class="toast toast-info">Loading...</div>';
   try {
@@ -120,7 +128,61 @@ async function pullIntoForm() {
       if (val) { sv(key, val); filled++; }
     });
     recalcAll();
+
+    _loadedItemId = sel.value;
+    const btn = $("btnUpdate"); if (btn) { btn.disabled = false; btn.title = ""; }
     status.innerHTML = `<div class="toast toast-success">✓ Loaded ${filled} fields. Totals recalculated.</div>`;
+  } catch (err) {
+    status.innerHTML = `<div class="toast toast-error">${err.message}</div>`;
+  }
+}
+
+// ── Collect all form field values ──
+function collectFormData() {
+  const data = {};
+  document.querySelectorAll("[data-field]").forEach((el) => { data[el.id] = el.value; });
+  return data;
+}
+
+// ── Save as new SP list item ──
+async function saveNewRequest() {
+  const status = $("saveStatus");
+  if (!$("purpose") || !$("purpose").value.trim()) {
+    status.innerHTML = '<div class="toast toast-error">Purpose of Travel is required before saving.</div>';
+    return;
+  }
+  status.innerHTML = '<div class="toast toast-info">Saving new request...</div>';
+  try {
+    const res = await fetch("/api/items", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(collectFormData()),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    _loadedItemId = data.id;
+    const btn = $("btnUpdate"); if (btn) { btn.disabled = false; btn.title = ""; }
+    status.innerHTML = `<div class="toast toast-success">✓ Request saved to SharePoint (ID: ${data.id}).</div>`;
+  } catch (err) {
+    status.innerHTML = `<div class="toast toast-error">${err.message}</div>`;
+  }
+}
+
+// ── Update existing SP list item ──
+async function updateRequest() {
+  const status = $("saveStatus");
+  if (!_loadedItemId) return;
+  status.innerHTML = '<div class="toast toast-info">Updating request...</div>';
+  try {
+    const res = await fetch(`/api/items/${_loadedItemId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(collectFormData()),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    status.innerHTML = '<div class="toast toast-success">✓ Request updated in SharePoint.</div>';
   } catch (err) {
     status.innerHTML = `<div class="toast toast-error">${err.message}</div>`;
   }
@@ -167,4 +229,7 @@ async function generatePDF() {
 function clearForm() {
   document.querySelectorAll("[data-field]").forEach((el) => { el.value = ""; });
   $("pdfStatus").innerHTML = "";
+  $("saveStatus").innerHTML = "";
+  _loadedItemId = null;
+  const btn = $("btnUpdate"); if (btn) { btn.disabled = true; btn.title = "Load a request from SharePoint first"; }
 }

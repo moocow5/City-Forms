@@ -87,8 +87,11 @@
       <div class="action-bar no-print" style="margin:0">
         <a href="/forms/reconcile" class="btn btn-sm" style="background:var(--accent);color:#fff;text-decoration:none">Post-Trip Reconciliation →</a>
         <button class="btn btn-success btn-sm" onclick="generatePDF()">📄 Generate PDF</button>
+        <button class="btn btn-sm" style="background:var(--success);color:#fff" onclick="saveNewRequest()">💾 Save New Request</button>
+        <button class="btn btn-sm" style="background:var(--warning);color:#fff" id="btnUpdate" onclick="updateRequest()" disabled title="Load a request from SharePoint first">✏️ Update Request</button>
         <button class="btn btn-outline btn-sm" onclick="clearForm()">Clear</button>
       </div>
+      <div id="saveStatus"></div>
     </div>
     <div class="card-body">
       <div id="pdfStatus"></div>

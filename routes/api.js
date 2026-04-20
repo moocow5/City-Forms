@@ -54,6 +54,34 @@ router.get("/items/:id/debug", requireAuth, async (req, res) => {
   }
 });
 
+// POST /api/items — create a new SP list item from form data
+router.post("/items", requireAuth, async (req, res) => {
+  try {
+    const token = req.session.accessToken;
+    const siteId = req.session.spSiteId || (await sp.getSiteId(token));
+    const listId = req.session.spListId || (await sp.getListId(token, siteId));
+    const newId = await sp.createItem(token, siteId, listId, req.body);
+    res.json({ id: newId });
+  } catch (err) {
+    console.error("Create item error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH /api/items/:id — update an existing SP list item from form data
+router.patch("/items/:id", requireAuth, async (req, res) => {
+  try {
+    const token = req.session.accessToken;
+    const siteId = req.session.spSiteId || (await sp.getSiteId(token));
+    const listId = req.session.spListId || (await sp.getListId(token, siteId));
+    await sp.updateItem(token, siteId, listId, req.params.id, req.body);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Update item error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/generate-pdf — fill PDF template with form data, return PDF file
 router.post("/generate-pdf", async (req, res) => {
   try {
