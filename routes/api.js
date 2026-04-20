@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const sp = require("../services/sharepoint");
-const { generatePDF } = require("../services/pdf");
+const { generatePDF, generateReconcilePDF } = require("../services/pdf");
 const multer = require("multer") || null; // optional — for PDF template upload
 const fs = require("fs/promises");
 const path = require("path");
@@ -110,6 +110,28 @@ router.post("/generate-pdf", async (req, res) => {
     res.send(pdfBuffer);
   } catch (err) {
     console.error("PDF generation error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/generate-reconcile-pdf — fill page 2 of template with reconciliation data
+router.post("/generate-reconcile-pdf", async (req, res) => {
+  try {
+    const templatePath = path.join(__dirname, "..", "public", "templates", "travel-expense-template.pdf");
+    try { await fs.access(templatePath); } catch {
+      return res.status(400).json({ error: "PDF template not found." });
+    }
+
+    const pdfBuffer = await generateReconcilePDF(req.body);
+    const empName = (req.body.employeeName || "employee").replace(/\s+/g, "_");
+    const dt = req.body.fromDate || new Date().toISOString().slice(0, 10);
+    const filename = `Travel_Reconciliation_${empName}_${dt}.pdf`;
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(pdfBuffer);
+  } catch (err) {
+    console.error("Reconcile PDF error:", err);
     res.status(500).json({ error: err.message });
   }
 });

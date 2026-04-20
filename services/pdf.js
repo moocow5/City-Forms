@@ -110,4 +110,68 @@ async function generatePDF(templateName, formData) {
   return Buffer.from(pdfBytes);
 }
 
-module.exports = { generatePDF, FIELD_MAP };
+// Fields that belong to the reconciliation (page 2) section only
+const RECONCILE_FIELD_MAP = {
+  reg2:             "Registration2",
+  travel2:          "ComTravel2",
+  lodgingNights2:   "Lodging_2",
+  lodgingRate2:     "nights_2",
+  lodgingTotal2:    "Loding total2",
+  mileageMiles2:    "Mileage_2",
+  mileageRate2:     "miles_2",
+  mileageTotal2:    "Mile total 2",
+  breakfastIS2:     "Breakfast2",
+  breakfastISRate2: "ISBreak2",
+  breakfastOS2:     "OSBreak2",
+  breakfastOSRate2: "OSBreak3",
+  breakfastTotal2:  "Breakfast total2",
+  lunchIS2:         "Lunch2",
+  lunchISRate2:     "ISLunch2",
+  lunchOS2:         "OSLunch2",
+  lunchOSRate2:     "OSLunch3",
+  lunchTotal2:      "Lunchtotal2",
+  supperIS2:        "Supper2",
+  supperISRate2:    "ISSupper2",
+  supperOS2:        "OSSupper2",
+  supperOSRate2:    "OSSupper3",
+  supperTotal2:     "Suppertotal2",
+  other1Desc2:      "Other_2",
+  other1Total2:     "Other total2",
+  other2Desc2:      "Total",
+  other2Total2:     "Total3",
+  totalExpense:     "Total expense2",
+  amountPaid:       "Amount pd",
+  advanceMoney2:    "Advance money",
+  amountDue:        "Amount due",
+  deptHead2:        "Department Head_2",
+};
+
+/**
+ * Generate a filled reconciliation PDF using page 2 of the travel expense template.
+ * Fills section-2 fields, then removes page 1 from the output.
+ */
+async function generateReconcilePDF(formData) {
+  const templatePath = path.join(TEMPLATE_DIR, "travel-expense-template.pdf");
+  const templateBytes = await fs.readFile(templatePath);
+  const pdfDoc = await PDFDocument.load(templateBytes);
+  const form = pdfDoc.getForm();
+
+  for (const [formKey, pdfFieldName] of Object.entries(RECONCILE_FIELD_MAP)) {
+    const value = formData[formKey];
+    if (value) {
+      try {
+        form.getTextField(pdfFieldName).setText(String(value));
+      } catch {
+        // Field not in this template version — skip
+      }
+    }
+  }
+
+  // Remove page 1 — reconciliation is page 2 only
+  pdfDoc.removePage(0);
+
+  const pdfBytes = await pdfDoc.save();
+  return Buffer.from(pdfBytes);
+}
+
+module.exports = { generatePDF, generateReconcilePDF, FIELD_MAP, RECONCILE_FIELD_MAP };
