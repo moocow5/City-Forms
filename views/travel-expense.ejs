@@ -62,19 +62,19 @@
       <% } else if (spError) { %>
         <div class="toast toast-error"><%= spError %></div>
       <% } else { %>
-        <label style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">
-          Select a Request (<%= items.length %> items)
-        </label>
-        <select class="sp-select" id="spItemSelect" onchange="pullIntoForm()">
-          <option value="">— Select a request —</option>
-          <% items.forEach((item) => { %>
-            <option value="<%= item.id %>">
-              <%= item.fields.Title || '' %><%= item.requesterName ? ' | ' + item.requesterName : '' %><%= item.fields.TravelStartDate ? ' | ' + new Date(item.fields.TravelStartDate).toLocaleDateString() : '' %>
-            </option>
-          <% }); %>
-        </select>
+        <div class="new-or-load">
+          <button class="btn btn-new-request" onclick="startNewRequest()">＋ New Travel Request</button>
+          <span class="new-or-load-divider">or load an existing request</span>
+          <select class="sp-select" id="spItemSelect" onchange="pullIntoForm()" style="margin-top:0;flex:1">
+            <option value="">— Select a request —</option>
+            <% items.forEach((item) => { %>
+              <option value="<%= item.id %>">
+                <%= item.fields.Title || '' %><%= item.requesterName ? ' | ' + item.requesterName : '' %><%= item.fields.TravelStartDate ? ' | ' + new Date(item.fields.TravelStartDate).toLocaleDateString() : '' %>
+              </option>
+            <% }); %>
+          </select>
+        </div>
 
-        <div class="sp-preview" id="spPreview"></div>
         <div id="spStatus"></div>
       <% } %>
     </div>
@@ -89,7 +89,6 @@
         <button class="btn btn-success btn-sm" onclick="generatePDF()">📄 Generate PDF</button>
         <button class="btn btn-sm" style="background:var(--success);color:#fff" onclick="saveNewRequest()">💾 Save New Request</button>
         <button class="btn btn-sm" style="background:var(--warning);color:#fff" id="btnUpdate" onclick="updateRequest()" disabled title="Load a request from SharePoint first">✏️ Update Request</button>
-        <button class="btn btn-outline btn-sm" onclick="clearForm()">Clear</button>
       </div>
       <div id="saveStatus"></div>
     </div>

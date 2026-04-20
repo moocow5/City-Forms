@@ -275,6 +275,34 @@ body {
 .variance-table .section-header-row td { padding: 0; }
 .variance-table .totals-row td { background: var(--gray-50); }
 
+.new-or-load {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.new-or-load-divider {
+  font-size: 12px;
+  color: var(--gray-400);
+  white-space: nowrap;
+}
+.btn-new-request {
+  background: var(--success);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(39,174,96,0.35);
+  transition: background var(--transition), transform var(--transition);
+}
+.btn-new-request:hover { background: #219a52; transform: translateY(-1px); }
+.btn-new-request:active { transform: translateY(0); }
+
 .var-over  { color: var(--danger);  font-weight: 600; }
 .var-under { color: var(--success); font-weight: 600; }
 .var-zero  { color: var(--gray-400); }

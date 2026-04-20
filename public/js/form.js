@@ -225,6 +225,14 @@ async function generatePDF() {
   }
 }
 
+// ── Start a new blank request ──
+function startNewRequest() {
+  clearForm();
+  const sel = $("spItemSelect"); if (sel) sel.value = "";
+  const dept = $("department");
+  if (dept) { dept.focus(); dept.scrollIntoView({ behavior: "smooth", block: "center" }); }
+}
+
 // ── Clear form ──
 function clearForm() {
   document.querySelectorAll("[data-field]").forEach((el) => { el.value = ""; });
