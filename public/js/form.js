@@ -10,88 +10,62 @@ const pf = (v) => parseFloat(v) || 0;
 const fmt = (n) => (isNaN(n) || n === 0) ? "" : n.toFixed(2);
 
 // ── Auto-calc: Lodging ──
-function calcLodging(prefix) {
-  const nights = pf(gv(`${prefix}Nights`));
-  const rate = pf(gv(`${prefix}Rate`));
-  sv(`${prefix}Total`, fmt(nights * rate));
-  calcTotal(prefix.includes("2") ? "expense" : "prepaid");
+function calcLodging() {
+  sv("lodgingTotal", fmt(pf(gv("lodgingNights")) * pf(gv("lodgingRate"))));
+  calcTotal();
 }
 
 // ── Auto-calc: Mileage ──
-function calcMileage(prefix) {
-  const miles = pf(gv(`${prefix}Miles`));
-  const rate = pf(gv(`${prefix}Rate`));
-  sv(`${prefix}Total`, fmt(miles * rate));
-  calcTotal(prefix.includes("2") ? "expense" : "prepaid");
+function calcMileage() {
+  sv("mileageTotal", fmt(pf(gv("mileageMiles")) * pf(gv("mileageRate"))));
+  calcTotal();
 }
 
 // ── Auto-calc: Meals ──
-function calcMeal(meal, section) {
-  const sfx = section === 2 ? "2" : "";
-  const isCount = pf(gv(`${meal}IS${sfx}`));
-  const isRate = pf(gv(`${meal}ISRate${sfx}`));
-  const osCount = pf(gv(`${meal}OS${sfx}`));
-  const osRate = pf(gv(`${meal}OSRate${sfx}`));
-  sv(`${meal}Total${sfx}`, fmt(isCount * isRate + osCount * osRate));
-  calcTotal(section === 2 ? "expense" : "prepaid");
+function calcMeal(meal) {
+  sv(`${meal}Total`, fmt(
+    pf(gv(`${meal}IS`)) * pf(gv(`${meal}ISRate`)) +
+    pf(gv(`${meal}OS`)) * pf(gv(`${meal}OSRate`))
+  ));
+  calcTotal();
 }
 
 // ── Totals ──
-function calcTotal(which) {
-  if (which === "prepaid") {
-    const keys = ["regCheck", "travelCheck", "lodgingTotal", "mileageTotal",
-      "breakfastTotal", "lunchTotal", "supperTotal", "other1Total", "other2Total"];
-    const sum = keys.reduce((s, k) => s + pf(gv(k)), 0);
-    sv("estimatedTotal", fmt(sum));
-  } else {
-    const keys = ["reg2", "travel2", "lodgingTotal2", "mileageTotal2",
-      "breakfastTotal2", "lunchTotal2", "supperTotal2", "other1Total2", "other2Total2"];
-    const sum = keys.reduce((s, k) => s + pf(gv(k)), 0);
-    sv("totalExpense", fmt(sum));
-    sv("amountDue", fmt(sum - pf(gv("amountPaid")) - pf(gv("advanceMoney2"))));
-  }
+function calcTotal() {
+  const keys = ["regCheck", "travelCheck", "lodgingTotal", "mileageTotal",
+    "breakfastTotal", "lunchTotal", "supperTotal", "other1Total", "other2Total"];
+  sv("estimatedTotal", fmt(keys.reduce((s, k) => s + pf(gv(k)), 0)));
 }
 
 function recalcAll() {
-  calcLodging("lodging"); calcLodging("lodging2");
-  calcMileage("mileage"); calcMileage("mileage2");
-  ["breakfast", "lunch", "supper"].forEach((m) => { calcMeal(m, 1); calcMeal(m, 2); });
-  calcTotal("prepaid"); calcTotal("expense");
+  calcLodging();
+  calcMileage();
+  ["breakfast", "lunch", "supper"].forEach((m) => calcMeal(m));
+  calcTotal();
 }
 
 // ── Wire up oninput handlers ──
 document.addEventListener("DOMContentLoaded", () => {
   // Lodging
   ["lodgingNights", "lodgingRate"].forEach((id) => {
-    const el = $(id); if (el) el.addEventListener("input", () => calcLodging("lodging"));
-  });
-  ["lodgingNights2", "lodgingRate2"].forEach((id) => {
-    const el = $(id); if (el) el.addEventListener("input", () => calcLodging("lodging2"));
+    const el = $(id); if (el) el.addEventListener("input", calcLodging);
   });
 
   // Mileage
   ["mileageMiles", "mileageRate"].forEach((id) => {
-    const el = $(id); if (el) el.addEventListener("input", () => calcMileage("mileage"));
-  });
-  ["mileageMiles2", "mileageRate2"].forEach((id) => {
-    const el = $(id); if (el) el.addEventListener("input", () => calcMileage("mileage2"));
+    const el = $(id); if (el) el.addEventListener("input", calcMileage);
   });
 
   // Meals
-  const mealFields = ["IS", "ISRate", "OS", "OSRate"];
   ["breakfast", "lunch", "supper"].forEach((meal) => {
-    mealFields.forEach((sfx) => {
-      const el1 = $(meal + sfx); if (el1) el1.addEventListener("input", () => calcMeal(meal, 1));
-      const el2 = $(meal + sfx + "2"); if (el2) el2.addEventListener("input", () => calcMeal(meal, 2));
+    ["IS", "ISRate", "OS", "OSRate"].forEach((sfx) => {
+      const el = $(meal + sfx); if (el) el.addEventListener("input", () => calcMeal(meal));
     });
   });
 
-  // Direct totals that feed into prepaid/expense
+  // Direct totals
   ["regCheck", "travelCheck", "other1Total", "other2Total"].forEach((id) => {
-    const el = $(id); if (el) el.addEventListener("input", () => calcTotal("prepaid"));
-  });
-  ["reg2", "travel2", "other1Total2", "other2Total2", "amountPaid", "advanceMoney2"].forEach((id) => {
-    const el = $(id); if (el) el.addEventListener("input", () => calcTotal("expense"));
+    const el = $(id); if (el) el.addEventListener("input", calcTotal);
   });
 });
 
