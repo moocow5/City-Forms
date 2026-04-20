@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trip Reconciliation — City of North Platte</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <% if (embedded) { %>
+  <style>
+    .app-header { padding: 8px 16px; }
+    .app-header h1 { font-size: 14px; }
+    .container { padding: 16px 14px 40px; }
+    body { background: #fff; }
+    .card { box-shadow: var(--shadow-sm); }
+  </style>
+  <% } %>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header class="app-header">
+  <div style="display:flex;align-items:center;gap:14px">
+    <img src="/images/2022_CityLogo_WHITEFG.png" alt="City Seal" style="height:44px;width:44px">
+    <div>
+      <h1 style="margin:0;font-size:18px;letter-spacing:0.5px">City of North Platte</h1>
+      <span class="subtitle" style="font-size:11px;opacity:0.75;letter-spacing:1px;text-transform:uppercase">Post-Trip Reconciliation</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="/forms/travel-expense" class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;text-decoration:none">← Travel Request</a>
+    <% if (user) { %>
+      <div class="user-badge"><span class="dot"></span> <%= user.name %></div>
+      <a href="/auth/signout" class="btn btn-sm" style="color:#fff;text-decoration:none;opacity:0.8">Sign Out</a>
+    <% } else { %>
+      <% if (embedded) { %>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff" onclick="popupSignIn()">Sign In</button>
+      <% } else { %>
+        <a href="/auth/signin" class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;text-decoration:none">Sign In</a>
+      <% } %>
+    <% } %>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ══════ SHAREPOINT PICKER ══════ -->
+  <div class="card sp-card">
+    <div class="card-header" onclick="toggleSP()">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span>📋</span> Select a Trip to Reconcile
+        <% if (user) { %><span style="font-size:11px;background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:12px;margin-left:8px">● Connected</span><% } %>
+      </div>
+      <span class="chevron" id="spChevron">▾</span>
+    </div>
+    <div class="card-body open" id="spBody">
+      <% if (!user) { %>
+        <p style="color:var(--gray-500);margin-bottom:12px">Sign in with your City account to load travel requests from SharePoint.</p>
+        <% if (embedded) { %>
+          <button class="btn btn-primary" onclick="popupSignIn()">🔑 Sign In with Microsoft</button>
+        <% } else { %>
+          <a href="/auth/signin" class="btn btn-primary" style="text-decoration:none">🔑 Sign In with Microsoft</a>
+        <% } %>
+      <% } else if (spError) { %>
+        <div class="toast toast-error"><%= spError %></div>
+      <% } else { %>
+        <label style="font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase">
+          Select a Request (<%= items.length %> items)
+        </label>
+        <select class="sp-select" id="spItemSelect" onchange="pullIntoForm()">
+          <option value="">— Select a completed trip —</option>
+          <% items.forEach((item) => { %>
+            <option value="<%= item.id %>">
+              <%= item.fields.Title || '' %><%= item.requesterName ? ' | ' + item.requesterName : '' %><%= item.fields.TravelStartDate ? ' | ' + new Date(item.fields.TravelStartDate).toLocaleDateString() : '' %>
+            </option>
+          <% }); %>
+        </select>
+        <div id="spStatus"></div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- ══════ TRIP SUMMARY (read-only) ══════ -->
+  <div class="card" id="tripSummaryCard" style="display:none">
+    <div class="card-header">Trip Summary</div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>Department</label>
+          <input id="department" type="text" class="readonly-field" readonly>
+        </div>
+        <div class="form-group full">
+          <label>Employee Name</label>
+          <input id="employeeName" type="text" class="readonly-field" readonly>
+        </div>
+        <div class="form-group">
+          <label>From Date</label>
+          <input id="fromDate" type="text" class="readonly-field" readonly>
+        </div>
+        <div class="form-group">
+          <label>To Date</label>
+          <input id="toDate" type="text" class="readonly-field" readonly>
+        </div>
+        <div class="form-group full">
+          <label>Purpose of Travel</label>
+          <input id="purpose" type="text" class="readonly-field" readonly>
+        </div>
+        <div class="form-group full">
+          <label>Location</label>
+          <input id="location" type="text" class="readonly-field" readonly>
+        </div>
+      </div>
+      <!-- Hidden section-1 fields sent with PDF -->
+      <input id="fromTime" type="hidden">
+      <input id="toTime" type="hidden">
+      <input id="purpose2" type="hidden">
+      <input id="regCheck" type="hidden">
+      <input id="travelCheck" type="hidden">
+      <input id="lodgingNights" type="hidden">
+      <input id="lodgingRate" type="hidden">
+      <input id="lodgingTotal" type="hidden">
+      <input id="mileageMiles" type="hidden">
+      <input id="mileageRate" type="hidden">
+      <input id="mileageTotal" type="hidden">
+      <input id="breakfastIS" type="hidden">
+      <input id="breakfastISRate" type="hidden">
+      <input id="breakfastOS" type="hidden">
+      <input id="breakfastOSRate" type="hidden">
+      <input id="breakfastTotal" type="hidden">
+      <input id="lunchIS" type="hidden">
+      <input id="lunchISRate" type="hidden">
+      <input id="lunchOS" type="hidden">
+      <input id="lunchOSRate" type="hidden">
+      <input id="lunchTotal" type="hidden">
+      <input id="supperIS" type="hidden">
+      <input id="supperISRate" type="hidden">
+      <input id="supperOS" type="hidden">
+      <input id="supperOSRate" type="hidden">
+      <input id="supperTotal" type="hidden">
+      <input id="other1Desc" type="hidden">
+      <input id="other1Total" type="hidden">
+      <input id="other2Desc" type="hidden">
+      <input id="other2Total" type="hidden">
+      <input id="estimatedTotal" type="hidden">
+      <input id="advanceMoney" type="hidden">
+      <input id="deptHead" type="hidden">
+      <input id="cityAdmin" type="hidden">
+      <input id="approvalDate" type="hidden">
+    </div>
+  </div>
+
+  <!-- ══════ VARIANCE TABLE ══════ -->
+  <div class="card" id="varianceCard" style="display:none">
+    <div class="card-header">
+      <span>Expense Reconciliation</span>
+      <div class="action-bar no-print" style="margin:0">
+        <button class="btn btn-success btn-sm" onclick="generatePDF()" id="pdfBtn">📄 Generate Reconciliation PDF</button>
+        <button class="btn btn-outline btn-sm" onclick="clearActuals()">Clear Actuals</button>
+      </div>
+    </div>
+    <div class="card-body">
+      <div id="pdfStatus"></div>
+
+      <table class="variance-table">
+        <thead>
+          <tr>
+            <th style="width:28%">Category</th>
+            <th style="width:24%;text-align:right">Estimated</th>
+            <th style="width:30%">Actual</th>
+            <th style="width:18%;text-align:right">Variance</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <!-- Registration -->
+          <tr>
+            <td class="row-label">Registration</td>
+            <td class="est-cell"><span id="est_reg">—</span></td>
+            <td>
+              <input id="reg2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()">
+            </td>
+            <td class="var-cell"><span id="var_reg" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Commercial Travel -->
+          <tr>
+            <td class="row-label">Commercial Travel</td>
+            <td class="est-cell"><span id="est_travel">—</span></td>
+            <td>
+              <input id="travel2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()">
+            </td>
+            <td class="var-cell"><span id="var_travel" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Lodging -->
+          <tr>
+            <td class="row-label">Lodging</td>
+            <td class="est-cell"><span id="est_lodging">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="lodgingNights2" data-field type="text" placeholder="nights" style="width:60px" oninput="recalcLodging()">
+                <input id="lodgingRate2" data-field type="text" placeholder="rate" style="width:70px" oninput="recalcLodging()">
+                <input id="lodgingTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly style="width:80px">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_lodging" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Mileage -->
+          <tr>
+            <td class="row-label">Mileage</td>
+            <td class="est-cell"><span id="est_mileage">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="mileageMiles2" data-field type="text" placeholder="miles" style="width:60px" oninput="recalcMileage()">
+                <input id="mileageRate2" data-field type="text" placeholder="rate" style="width:70px" oninput="recalcMileage()">
+                <input id="mileageTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly style="width:80px">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_mileage" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Meals header row -->
+          <tr class="section-header-row">
+            <td colspan="4" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
+              Meals &nbsp;<span style="font-weight:400;font-size:10px">(In-State qty × rate + Out-of-State qty × rate)</span>
+            </td>
+          </tr>
+
+          <!-- Breakfast -->
+          <tr>
+            <td class="row-label">Breakfast</td>
+            <td class="est-cell"><span id="est_breakfast">—</span></td>
+            <td>
+              <div class="meal-inputs">
+                <input id="breakfastIS2" data-field type="text" placeholder="IS#" oninput="recalcMeal('breakfast')">
+                <input id="breakfastISRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('breakfast')">
+                <input id="breakfastOS2" data-field type="text" placeholder="OS#" oninput="recalcMeal('breakfast')">
+                <input id="breakfastOSRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('breakfast')">
+                <input id="breakfastTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly>
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_breakfast" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Lunch -->
+          <tr>
+            <td class="row-label">Lunch</td>
+            <td class="est-cell"><span id="est_lunch">—</span></td>
+            <td>
+              <div class="meal-inputs">
+                <input id="lunchIS2" data-field type="text" placeholder="IS#" oninput="recalcMeal('lunch')">
+                <input id="lunchISRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('lunch')">
+                <input id="lunchOS2" data-field type="text" placeholder="OS#" oninput="recalcMeal('lunch')">
+                <input id="lunchOSRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('lunch')">
+                <input id="lunchTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly>
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_lunch" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Supper -->
+          <tr>
+            <td class="row-label">Supper</td>
+            <td class="est-cell"><span id="est_supper">—</span></td>
+            <td>
+              <div class="meal-inputs">
+                <input id="supperIS2" data-field type="text" placeholder="IS#" oninput="recalcMeal('supper')">
+                <input id="supperISRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('supper')">
+                <input id="supperOS2" data-field type="text" placeholder="OS#" oninput="recalcMeal('supper')">
+                <input id="supperOSRate2" data-field type="text" placeholder="rate" oninput="recalcMeal('supper')">
+                <input id="supperTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly>
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_supper" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Other 1 -->
+          <tr>
+            <td class="row-label">Other</td>
+            <td class="est-cell"><span id="est_other1">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="other1Desc2" data-field type="text" placeholder="Description" style="flex:1">
+                <input id="other1Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_other1" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Other 2 -->
+          <tr>
+            <td class="row-label"></td>
+            <td class="est-cell"><span id="est_other2">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="other2Desc2" data-field type="text" placeholder="Description" style="flex:1">
+                <input id="other2Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_other2" class="var-zero">—</span></td>
+          </tr>
+
+        </tbody>
+        <tfoot>
+          <tr class="totals-row">
+            <td style="font-weight:700;color:var(--brand)">Totals</td>
+            <td class="est-cell" style="font-weight:700"><span id="est_total">—</span></td>
+            <td>
+              <input id="totalExpense" data-field type="text" class="total-field" readonly style="font-weight:700;border-color:var(--brand);color:var(--brand)">
+            </td>
+            <td class="var-cell" style="font-weight:700"><span id="var_total" class="var-zero">—</span></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <!-- ── Deductions ── -->
+      <div class="form-grid" style="margin-top:20px">
+        <div class="form-group">
+          <label>Less: Amounts Paid Direct ($)</label>
+          <input id="amountPaid" data-field type="text" placeholder="0.00" oninput="recalcAll()">
+        </div>
+        <div class="form-group">
+          <label>Less: Advance Money ($)</label>
+          <input id="advanceMoney2" data-field type="text" placeholder="0.00" oninput="recalcAll()">
+        </div>
+        <div class="form-group full" style="margin-top:8px">
+          <label style="font-size:13px;color:var(--brand)">Amount Due Employee or (Refund)</label>
+          <input id="amountDue" data-field type="text" readonly
+            style="max-width:220px;font-size:16px;font-weight:700;border:2px solid var(--brand);color:var(--brand);background:var(--brand-light);padding:10px 14px;border-radius:6px">
+        </div>
+      </div>
+
+      <!-- ── Signatures ── -->
+      <div class="sig-grid" style="margin-top:24px">
+        <div class="sig-block">
+          <label>Employee</label>
+          <input id="empSigDisplay" type="text" class="readonly-field" readonly placeholder="(auto-filled from request)">
+        </div>
+        <div class="sig-block">
+          <label>Department Head</label>
+          <input id="deptHead2" data-field type="text">
+        </div>
+      </div>
+
+      <div style="text-align:right;margin-top:20px;font-size:11px;color:var(--gray-400)">revised 7-1-2022</div>
+    </div>
+  </div>
+
+</div>
+
+<script src="/js/reconcile.js"></script>
+<% if (embedded) { %>
+<script>
+  function popupSignIn() {
+    const w = 500, h = 650;
+    const left = (screen.width - w) / 2;
+    const top = (screen.height - h) / 2;
+    window.open(
+      "/auth/signin?embedded=1",
+      "CityFormsAuth",
+      "width=" + w + ",height=" + h + ",top=" + top + ",left=" + left + ",toolbar=no,menubar=no"
+    );
+  }
+  window.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "auth-complete") { location.reload(); }
+  });
+</script>
+<% } %>
+</body>
+</html>

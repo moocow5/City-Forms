@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <style>
+      .seal-text { font-family: 'Georgia', 'Times New Roman', serif; fill: #ffffff; }
+    </style>
+  </defs>
+  <!-- Outer rings -->
+  <circle cx="100" cy="100" r="97" fill="none" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="100" cy="100" r="88" fill="none" stroke="#ffffff" stroke-width="1"/>
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="62" fill="none" stroke="#ffffff" stroke-width="1"/>
+  <!-- Horizontal lines -->
+  <line x1="3" y1="100" x2="38" y2="100" stroke="#ffffff" stroke-width="1.5"/>
+  <line x1="162" y1="100" x2="197" y2="100" stroke="#ffffff" stroke-width="1.5"/>
+  <!-- NP -->
+  <text x="100" y="115" text-anchor="middle" class="seal-text" font-size="58" font-weight="bold" letter-spacing="2">NP</text>
+  <!-- EST 1873 -->
+  <text x="100" y="143" text-anchor="middle" class="seal-text" font-size="15" letter-spacing="5">EST 1873</text>
+  <!-- Curved: CITY OF NORTH PLATTE -->
+  <path id="topCurve" d="M 25,105 A 78,78 0 0,1 175,105" fill="none"/>
+  <text class="seal-text" font-size="13" letter-spacing="3.5">
+    <textPath href="#topCurve" startOffset="50%" text-anchor="middle">CITY OF NORTH PLATTE</textPath>
+  </text>
+  <!-- Curved: NEBRASKA -->
+  <path id="bottomCurve" d="M 32,112 A 74,74 0 0,0 168,112" fill="none"/>
+  <text class="seal-text" font-size="14" letter-spacing="5">
+    <textPath href="#bottomCurve" startOffset="50%" text-anchor="middle">NEBRASKA</textPath>
+  </text>
+</svg>
