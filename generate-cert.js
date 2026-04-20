@@ -140,9 +140,9 @@ const cn = asn1Seq(asn1Set(asn1Seq(asn1OID("2.5.4.3"), asn1UTF8("CityForms"))));
 // Validity
 const validity = asn1Seq(asn1GeneralizedTime(notBefore), asn1GeneralizedTime(notAfter));
 
-// Subject Alternative Name extension: DNS:localhost, IP:10.2.1.110
+// Subject Alternative Name extension: DNS:localhost, IP:172.30.2.55
 const sanDNS = Buffer.concat([Buffer.from([0x82]), asn1Len(9), Buffer.from("localhost", "ascii")]);
-const ipBytes = Buffer.from([10, 2, 1, 110]);
+const ipBytes = Buffer.from([172, 30, 2, 55]);
 const sanIP = Buffer.concat([Buffer.from([0x87]), asn1Len(4), ipBytes]);
 const sanValue = asn1Seq(sanDNS, sanIP);
 const sanExt = asn1Seq(
@@ -188,4 +188,4 @@ fs.writeFileSync(certPath, certPem);
 console.log(`  ✓ Certificate: ${certPath}`);
 console.log(`  ✓ Key:         ${keyPath}`);
 console.log(`  ✓ Valid for:   365 days`);
-console.log(`  ✓ SANs:        localhost, 10.2.1.110\n`);
+console.log(`  ✓ SANs:        localhost, 172.30.2.55\n`);

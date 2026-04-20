@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const path = require("path");
+const fs = require("fs");
+const https = require("https");
 
 const authRoutes = require("./routes/auth");
 const formRoutes = require("./routes/forms");
@@ -71,7 +73,21 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", uptime: process.uptime() });
 });
 
-app.listen(PORT, () => {
-  console.log(`\n  City Forms running → http://localhost:${PORT}`);
-  console.log(`  SharePoint embed URL → http://localhost:${PORT}/forms/travel-expense?embedded=1\n`);
-});
+const keyPath  = path.join(__dirname, "certs", "server.key");
+const certPath = path.join(__dirname, "certs", "server.cert");
+
+if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+  const sslOptions = {
+    key:  fs.readFileSync(keyPath),
+    cert: fs.readFileSync(certPath),
+  };
+  https.createServer(sslOptions, app).listen(PORT, () => {
+    console.log(`\n  City Forms running → https://localhost:${PORT}`);
+    console.log(`  SharePoint embed URL → https://localhost:${PORT}/forms/travel-expense?embedded=1\n`);
+  });
+} else {
+  app.listen(PORT, () => {
+    console.log(`\n  City Forms running (HTTP) → http://localhost:${PORT}`);
+    console.log(`  Run 'node generate-cert.js' to enable HTTPS.\n`);
+  });
+}
