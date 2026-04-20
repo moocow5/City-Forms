@@ -126,6 +126,16 @@ function recalcAll() {
   setVariance("var_total",   total,           EST.total);
 }
 
+// ── Loaded item tracking ──
+let _loadedItemId = null;
+
+function enableSaveBtn(on) {
+  const btn = $("btnSaveRecon");
+  if (!btn) return;
+  btn.disabled = !on;
+  btn.title = on ? "" : "Load a trip first";
+}
+
 // ── SP panel toggle ──
 function toggleSP() {
   const body = $("spBody");
@@ -139,6 +149,8 @@ async function pullIntoForm() {
   const sel = $("spItemSelect");
   const status = $("spStatus");
   if (!sel.value) {
+    _loadedItemId = null;
+    enableSaveBtn(false);
     $("tripSummaryCard").style.display = "none";
     $("varianceCard").style.display = "none";
     status.innerHTML = "";
@@ -176,17 +188,54 @@ async function pullIntoForm() {
     ];
     s1Fields.forEach((key) => { if (fd[key]) sv(key, fd[key]); });
 
-    // Pre-fill advance money in section-2
+    // Pre-fill advance money in section-2 (from request, overridden by saved reconciliation below)
     if (fd.advanceMoney) sv("advanceMoney2", fd.advanceMoney);
 
-    // Load estimated spans, copy per diem meals, reset variances
+    // Populate saved reconciliation actuals if they exist
+    const reconFields = [
+      "reg2","travel2","lodgingNights2","lodgingRate2","lodgingTotal2",
+      "mileageMiles2","mileageRate2","mileageTotal2",
+      "other1Desc2","other1Total2","other2Desc2","other2Total2",
+      "amountPaid","advanceMoney2","deptHead2"
+    ];
+    reconFields.forEach((key) => { if (fd[key]) sv(key, fd[key]); });
+
+    // Load estimated spans, copy per diem meals, recalc
     loadEstimates(fd);
     copyMealPerDiem(fd);
     recalcAll();
 
+    _loadedItemId = sel.value;
+    enableSaveBtn(true);
     $("tripSummaryCard").style.display = "";
     $("varianceCard").style.display = "";
-    status.innerHTML = '<div class="toast toast-success">✓ Trip loaded. Enter actual expenses below.</div>';
+    const hasRecon = fd.reg2 || fd.travel2 || fd.lodgingTotal2 || fd.mileageTotal2;
+    status.innerHTML = hasRecon
+      ? '<div class="toast toast-success">✓ Trip loaded with saved reconciliation data.</div>'
+      : '<div class="toast toast-success">✓ Trip loaded. Enter actual expenses below.</div>';
+  } catch (err) {
+    status.innerHTML = `<div class="toast toast-error">${err.message}</div>`;
+  }
+}
+
+// ── Save reconciliation to SharePoint ──
+async function saveReconciliation() {
+  const status = $("saveReconcileStatus");
+  if (!_loadedItemId) return;
+  status.innerHTML = '<div class="toast toast-info">Saving reconciliation...</div>';
+
+  const formData = {};
+  document.querySelectorAll("[data-field]").forEach((el) => { formData[el.id] = el.value; });
+
+  try {
+    const res = await fetch(`/api/items/${_loadedItemId}/reconcile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    status.innerHTML = '<div class="toast toast-success">✓ Reconciliation saved to SharePoint.</div>';
   } catch (err) {
     status.innerHTML = `<div class="toast toast-error">${err.message}</div>`;
   }

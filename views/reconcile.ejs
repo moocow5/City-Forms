@@ -153,11 +153,13 @@
     <div class="card-header">
       <span>Expense Reconciliation</span>
       <div class="action-bar no-print" style="margin:0">
+        <button class="btn btn-sm" style="background:var(--success);color:#fff" id="btnSaveRecon" onclick="saveReconciliation()" disabled title="Load a trip first">💾 Save Reconciliation</button>
         <button class="btn btn-success btn-sm" onclick="generatePDF()" id="pdfBtn">📄 Generate Reconciliation PDF</button>
         <button class="btn btn-outline btn-sm" onclick="clearActuals()">Clear Actuals</button>
       </div>
     </div>
     <div class="card-body">
+      <div id="saveReconcileStatus"></div>
       <div id="pdfStatus"></div>
 
       <table class="variance-table">

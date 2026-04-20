@@ -68,6 +68,20 @@ router.post("/items", requireAuth, async (req, res) => {
   }
 });
 
+// PATCH /api/items/:id/reconcile — save reconciliation actuals to an existing SP item
+router.patch("/items/:id/reconcile", requireAuth, async (req, res) => {
+  try {
+    const token = req.session.accessToken;
+    const siteId = req.session.spSiteId || (await sp.getSiteId(token));
+    const listId = req.session.spListId || (await sp.getListId(token, siteId));
+    await sp.saveReconciliation(token, siteId, listId, req.params.id, req.body);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error("Save reconciliation error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // PATCH /api/items/:id — update an existing SP list item from form data
 router.patch("/items/:id", requireAuth, async (req, res) => {
   try {

@@ -15,6 +15,13 @@ const SP_FIELDS = [
   "Lunch", "LunchRate", "Lunch_x0020_Cost",
   "Dinner", "DinnerRate", "Dinner_x0020_Cost",
   "Total_x0020_Requested_x0020_Amou", "AuthorLookupId",
+  // Reconciliation actuals
+  "ActualRegistration", "ActualTravel",
+  "ActualLodgingNights", "ActualLodgingRate", "ActualLodgingTotal",
+  "ActualMileage", "ActualMileageRate", "ActualMileageTotal",
+  "ActualOther1Desc", "ActualOther1Total", "ActualOther2Desc", "ActualOther2Total",
+  "ActualTotalExpense", "ActualAmountPaid", "ActualAdvanceMoney", "ActualAmountDue",
+  "ReconciliationDeptHead", "ReconciliationDate",
 ].join(",");
 
 /**
@@ -182,7 +189,62 @@ function mapItemToForm(item) {
     supperISRate: parseMoney(f.DinnerRate),
     supperTotal: parseCalc(f.Dinner_x0020_Cost),
     totalPrepaid: parseCalc(f.Total_x0020_Requested_x0020_Amou),
+    // Reconciliation actuals (populated if a reconciliation has been saved)
+    reg2:           parseMoney(f.ActualRegistration),
+    travel2:        parseMoney(f.ActualTravel),
+    lodgingNights2: parseNum(f.ActualLodgingNights),
+    lodgingRate2:   parseMoney(f.ActualLodgingRate),
+    lodgingTotal2:  parseMoney(f.ActualLodgingTotal),
+    mileageMiles2:  parseNum(f.ActualMileage),
+    mileageRate2:   parseMoney(f.ActualMileageRate),
+    mileageTotal2:  parseMoney(f.ActualMileageTotal),
+    other1Desc2:    f.ActualOther1Desc  || "",
+    other1Total2:   parseMoney(f.ActualOther1Total),
+    other2Desc2:    f.ActualOther2Desc  || "",
+    other2Total2:   parseMoney(f.ActualOther2Total),
+    totalExpense:   parseMoney(f.ActualTotalExpense),
+    amountPaid:     parseMoney(f.ActualAmountPaid),
+    advanceMoney2:  parseMoney(f.ActualAdvanceMoney),
+    amountDue:      parseMoney(f.ActualAmountDue),
+    deptHead2:      f.ReconciliationDeptHead || "",
   };
+}
+
+/**
+ * Map reconciliation form fields to SP column names for PATCH.
+ */
+function mapReconcileToFields(formData) {
+  const n = (v) => (v === "" || v == null) ? null : parseFloat(v) || null;
+  const s = (v) => v || null;
+  return {
+    ActualRegistration:    n(formData.reg2),
+    ActualTravel:          n(formData.travel2),
+    ActualLodgingNights:   n(formData.lodgingNights2),
+    ActualLodgingRate:     n(formData.lodgingRate2),
+    ActualLodgingTotal:    n(formData.lodgingTotal2),
+    ActualMileage:         n(formData.mileageMiles2),
+    ActualMileageRate:     n(formData.mileageRate2),
+    ActualMileageTotal:    n(formData.mileageTotal2),
+    ActualOther1Desc:      s(formData.other1Desc2),
+    ActualOther1Total:     n(formData.other1Total2),
+    ActualOther2Desc:      s(formData.other2Desc2),
+    ActualOther2Total:     n(formData.other2Total2),
+    ActualTotalExpense:    n(formData.totalExpense),
+    ActualAmountPaid:      n(formData.amountPaid),
+    ActualAdvanceMoney:    n(formData.advanceMoney2),
+    ActualAmountDue:       n(formData.amountDue),
+    ReconciliationDeptHead: s(formData.deptHead2),
+    ReconciliationDate:    new Date().toISOString(),
+  };
+}
+
+/**
+ * Save reconciliation actuals to an existing SP list item.
+ */
+async function saveReconciliation(token, siteId, listId, itemId, formData) {
+  const fields = mapReconcileToFields(formData);
+  const body = Object.fromEntries(Object.entries(fields).filter(([, v]) => v != null));
+  await graphPatch(token, `/sites/${siteId}/lists/${listId}/items/${itemId}/fields`, body);
 }
 
 /**
@@ -244,8 +306,10 @@ module.exports = {
   getItem,
   mapItemToForm,
   mapFormToFields,
+  mapReconcileToFields,
   createItem,
   updateItem,
+  saveReconciliation,
   parseLocation,
   parseCalc,
   parseDate,
