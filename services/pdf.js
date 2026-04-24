@@ -104,52 +104,6 @@ const TEMPLATE_DIR = path.join(__dirname, "..", "public", "templates");
  * @param {string[]} newTotalNames - 3 new total field names (rows 3-5)
  * @param {object} formData
  */
-/**
- * @param {string[]} descKeys  - formData keys for descriptions (e.g. ["other3Desc","other4Desc","other5Desc"])
- * @param {string[]} totalKeys - formData keys for totals
- */
-function addExtraOtherFields(
-  pdfDoc, form, pageIndex,
-  totalField1, totalField2, descField2,
-  newDescNames, newTotalNames,
-  descKeys, totalKeys,
-  formData
-) {
-  try {
-    const page = pdfDoc.getPage(pageIndex);
-
-    // Derive row spacing from the two existing total field widget positions
-    const wgt1 = form.getTextField(totalField1).acroField.getWidgets()[0];
-    const wgt2 = form.getTextField(totalField2).acroField.getWidgets()[0];
-    const wgtDesc2 = form.getTextField(descField2).acroField.getWidgets()[0];
-
-    if (!wgt1 || !wgt2 || !wgtDesc2) return;
-
-    const r1 = wgt1.getRectangle();
-    const r2 = wgt2.getRectangle();
-    const rd2 = wgtDesc2.getRectangle();
-
-    // rowH is positive: row 1 is higher on the page (larger y) than row 2
-    const rowH = r1.y - r2.y;
-
-    for (let i = 0; i < 3; i++) {
-      // Each new row sits one more step BELOW row 2 (decreasing y in PDF coords)
-      const newY = r2.y - rowH * (i + 1);
-
-      const descField = form.createTextField(newDescNames[i]);
-      descField.addToPage(page, { x: rd2.x, y: newY, width: rd2.width, height: rd2.height, borderWidth: 0.5 });
-      const descVal = formData[descKeys[i]];
-      if (descVal) descField.setText(String(descVal));
-
-      const totalField = form.createTextField(newTotalNames[i]);
-      totalField.addToPage(page, { x: r2.x, y: newY, width: r2.width, height: r2.height, borderWidth: 0.5 });
-      const totalVal = formData[totalKeys[i]];
-      if (totalVal) totalField.setText(String(totalVal));
-    }
-  } catch {
-    // If template fields are missing or layout differs, skip gracefully
-  }
-}
 
 /**
  * Generate a filled PDF from form data.
@@ -173,17 +127,6 @@ async function generatePDF(templateName, formData) {
       }
     }
   }
-
-  // Add Other rows 3–5 dynamically (template only has 2)
-  addExtraOtherFields(
-    pdfDoc, form, 0,
-    "Other total", "Other total 2", "Other 2",
-    ["Other 3", "Other 4", "Other 5"],
-    ["Other total 3", "Other total 4", "Other total 5"],
-    ["other3Desc", "other4Desc", "other5Desc"],
-    ["other3Total", "other4Total", "other5Total"],
-    formData
-  );
 
   const pdfBytes = await pdfDoc.save();
   return Buffer.from(pdfBytes);
@@ -251,17 +194,6 @@ async function generateReconcilePDF(formData) {
       }
     }
   }
-
-  // Add Other rows 3–5 dynamically on page 2 (template only has 2)
-  addExtraOtherFields(
-    pdfDoc, form, 1,
-    "Other total2", "Total3", "Total",
-    ["Other_3", "Other_4", "Other_5"],
-    ["Other total3 2", "Other total4 2", "Other total5 2"],
-    ["other3Desc2", "other4Desc2", "other5Desc2"],
-    ["other3Total2", "other4Total2", "other5Total2"],
-    formData
-  );
 
   // Remove page 1 — reconciliation is page 2 only
   pdfDoc.removePage(0);
