@@ -145,6 +145,15 @@ async function build() {
   drawText(p1, "=", RATE_X + 54, y + 3, { size: 9, color: GRAY });
   drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Mileage total", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 2;
 
+  // Other (non-meal) expenses — above Meals section
+  const OTHER_FIELD_X = LBL_X + 38;
+  const OTHER_DESC_W = TOT_X - 16 - OTHER_FIELD_X;
+  drawText(p1, "Other", LBL_X, y + 3, { size: 9 }); addField(p1, "Other", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 2", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 3", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 4", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 4", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 5", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 5", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
+
   // Meals
   drawRect(p1, M, y - 2, CW, 16, { fill: ACCENT_BG });
   drawText(p1, "MEALS", LBL_X, y + 1, { font: helveticaBold, size: 8, color: BRAND });
@@ -170,13 +179,6 @@ async function build() {
   mealRow(p1, y, "Breakfast", ["Breakfast","ISBreak1","OutState1","OSBreak1","Breakfast total 1"]); y -= ROW_H;
   mealRow(p1, y, "Lunch", ["Lunch","ISLunch1","OStatelunch1","OSLunch1","Lunchtotal1"]); y -= ROW_H;
   mealRow(p1, y, "Supper", ["Supper","ISSupper1","OutState3","OSSupper1","Suppertotal1"]); y -= ROW_H;
-
-  const OTHER_DESC_W = TOT_X - 16 - LBL_X;
-  drawText(p1, "Other", LBL_X, y + 3, { size: 9 }); addField(p1, "Other", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p1, "Other 2", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p1, "Other 3", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p1, "Other 4", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 4", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p1, "Other 5", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 5", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
 
   // ── Estimated Trip Total (centered in gap between blue line and advance box) ──
   const dividerY = y + 14;
@@ -237,7 +239,7 @@ async function build() {
   drawText(p2, "NEBRASKA", M, H - 44, { font: helvetica, size: 9, color: rgb(0.7, 0.82, 0.92) });
   drawText(p2, "Expense Report — Actual Costs", M, H - 62, { font: helveticaObl, size: 11, color: rgb(0.8, 0.88, 0.95) });
   drawText(p2, "Distribution / Account Number", M + CW - 160, H - 62, { font: helvetica, size: 8, color: rgb(0.65, 0.78, 0.9) });
-  y = H - headerH - 14;
+  y = H - headerH - 30;
 
   drawRect(p2, M, y - 2, CW, 20, { fill: BRAND_LT });
   drawText(p2, "ACTUAL EXPENSES", M + 8, y + 3, { font: helveticaBold, size: 9, color: BRAND });
@@ -260,6 +262,13 @@ async function build() {
   drawText(p2, "=", RATE_X + 54, y + 3, { size: 9, color: GRAY });
   addField(p2, "Mile total 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 2;
 
+  // Other (non-meal) expenses — above Meals section
+  drawText(p2, "Other", LBL_X, y + 3, { size: 9 }); addField(p2, "Other_2", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Total", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Total3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Other_3", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total3 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Other_4", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total4 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Other_5", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total5 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
+
   drawRect(p2, M, y - 2, CW, 16, { fill: ACCENT_BG });
   drawText(p2, "MEALS", LBL_X, y + 1, { font: helveticaBold, size: 8, color: BRAND });
   drawText(p2, "# In State", IS_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
@@ -273,18 +282,12 @@ async function build() {
   mealRow(p2, y, "Lunch", ["Lunch2","ISLunch2","OSLunch2","OSLunch3","Lunchtotal2"]); y -= ROW_H;
   mealRow(p2, y, "Supper", ["Supper2","ISSupper2","OSSupper2","OSSupper3","Suppertotal2"]); y -= ROW_H + 2;
 
-  drawText(p2, "Other", LBL_X, y + 3, { size: 9 }); addField(p2, "Other_2", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p2, "Total", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Total3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p2, "Other_3", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total3 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p2, "Other_4", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total4 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p2, "Other_5", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total5 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
-
   drawLine(p2, M, y + 14, M + CW, { color: BRAND, thickness: 1.5 });
   drawText(p2, "TOTAL EXPENSES", LBL_X, y, { font: helveticaBold, size: 10, color: BRAND });
   drawText(p2, "$", TOT_X - 14, y, { font: helveticaBold, size: 11, color: BRAND });
-  addField(p2, "Total expense2", TOT_X, y - 4, TOT_W, 20, { fontSize: 11 }); y -= 36;
+  addField(p2, "Total expense2", TOT_X, y - 4, TOT_W, 20, { fontSize: 11 }); y -= 52;
 
-  drawRect(p2, M, y - 4, CW, 38, { fill: ACCENT_BG, border: LINE });
+  drawRect(p2, M, y - 4, CW, 44, { fill: ACCENT_BG, border: LINE });
   drawText(p2, "Less: Amounts paid direct", LBL_X + 20, y + 24, { size: 9 });
   drawText(p2, "($", TOT_X - 16, y + 24, { size: 9 });
   addField(p2, "Amount pd", TOT_X, y + 20, TOT_W - 10, FLD_H);
