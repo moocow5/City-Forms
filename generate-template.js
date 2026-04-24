@@ -85,17 +85,17 @@ async function build() {
   y = H - headerH - 16;
 
   // ── Compliance Statement (at top, before form fields) ──
-  drawRect(p1, M, y - 30, CW, 36, { fill: ACCENT_BG, border: LINE, borderWidth: 0.5 });
+  drawRect(p1, M, y - 26, CW, 30, { fill: ACCENT_BG, border: LINE, borderWidth: 0.5 });
   drawText(p1, "In compliance with the City of North Platte, NE, policy manual, I hereby request Educational, Training,", M + 10, y - 6, { size: 9, font: helveticaObl });
-  drawText(p1, "or other City Business leave as requested below:", M + 10, y - 20, { size: 9, font: helveticaObl });
-  y -= 48;
+  drawText(p1, "or other City Business leave as requested below:", M + 10, y - 18, { size: 9, font: helveticaObl });
+  y -= 40;
 
   // ── Form Fields ──
   drawText(p1, "DEPARTMENT", M, y, { font: helveticaBold, size: 8, color: GRAY });
-  y -= 4; addField(p1, "DEPARTMENT", M, y - 16, CW, 18); y -= 36;
+  y -= 4; addField(p1, "DEPARTMENT", M, y - 16, CW, 18); y -= 28;
 
   drawText(p1, "EMPLOYEE NAME", M, y, { font: helveticaBold, size: 8, color: GRAY });
-  y -= 4; addField(p1, "Name", M, y - 16, CW, 18); y -= 36;
+  y -= 4; addField(p1, "Name", M, y - 16, CW, 18); y -= 28;
 
   const colW4 = (CW - 24) / 4;
   drawText(p1, "FROM TIME", M, y, { font: helveticaBold, size: 8, color: GRAY });
@@ -107,20 +107,20 @@ async function build() {
   addField(p1, "date", M + colW4 + 8, y - 16, colW4, 18);
   addField(p1, "to time 1", M + (colW4 + 8) * 2, y - 16, colW4, 18);
   addField(p1, "date_2", M + (colW4 + 8) * 3, y - 16, colW4, 18);
-  y -= 36;
+  y -= 28;
 
   drawText(p1, "PURPOSE OF TRAVEL", M, y, { font: helveticaBold, size: 8, color: GRAY });
-  y -= 4; addField(p1, "for the purpose of attending", M, y - 16, CW, 18); y -= 20;
-  addField(p1, "Attending 2", M, y - 16, CW, 18); y -= 36;
+  y -= 4; addField(p1, "for the purpose of attending", M, y - 16, CW, 18); y -= 16;
+  addField(p1, "Attending 2", M, y - 16, CW, 18); y -= 28;
 
   drawText(p1, "LOCATION", M, y, { font: helveticaBold, size: 8, color: GRAY });
-  y -= 4; addField(p1, "location", M, y - 16, CW, 18); y -= 36;
+  y -= 4; addField(p1, "location", M, y - 16, CW, 18); y -= 28;
 
   // ── Estimated Education/Training Expenses ──
   drawRect(p1, M, y - 2, CW, 20, { fill: BRAND_LT });
   drawText(p1, "ESTIMATED EDUCATION/TRAINING EXPENSES", M + 8, y + 3, { font: helveticaBold, size: 9, color: BRAND });
   drawText(p1, "Amount", M + CW - 68, y + 3, { font: helveticaBold, size: 8, color: GRAY });
-  y -= 24;
+  y -= 20;
 
   const LBL_X = M + 8, QTY_X = M + 160, RATE_X = M + 280;
   const TOT_X = M + CW - 115, TOT_W = 108, FLD_H = 16, ROW_H = 20;
@@ -153,7 +153,7 @@ async function build() {
   drawText(p1, "# Out State", OS_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
   drawText(p1, "$ Rate", OS_X + 50, y + 1, { font: helveticaBold, size: 7, color: GRAY });
   drawText(p1, "Total", TOT_X + 35, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  y -= 20;
+  y -= 18;
 
   function mealRow(page, yy, label, names) {
     drawText(page, label, LBL_X, yy + 3, { size: 9 });
@@ -169,10 +169,14 @@ async function build() {
 
   mealRow(p1, y, "Breakfast", ["Breakfast","ISBreak1","OutState1","OSBreak1","Breakfast total 1"]); y -= ROW_H;
   mealRow(p1, y, "Lunch", ["Lunch","ISLunch1","OStatelunch1","OSLunch1","Lunchtotal1"]); y -= ROW_H;
-  mealRow(p1, y, "Supper", ["Supper","ISSupper1","OutState3","OSSupper1","Suppertotal1"]); y -= ROW_H + 2;
+  mealRow(p1, y, "Supper", ["Supper","ISSupper1","OutState3","OSSupper1","Suppertotal1"]); y -= ROW_H;
 
-  drawText(p1, "Other", LBL_X, y + 3, { size: 9 }); addField(p1, "Other", QTY_X - 30, y, 200, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p1, "Other 2", QTY_X - 30, y, 200, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
+  const OTHER_DESC_W = TOT_X - 16 - LBL_X;
+  drawText(p1, "Other", LBL_X, y + 3, { size: 9 }); addField(p1, "Other", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 2", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 3", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 4", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 4", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p1, "Other 5", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 5", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
 
   // ── Estimated Trip Total (centered in gap between blue line and advance box) ──
   const dividerY = y + 14;
@@ -269,15 +273,18 @@ async function build() {
   mealRow(p2, y, "Lunch", ["Lunch2","ISLunch2","OSLunch2","OSLunch3","Lunchtotal2"]); y -= ROW_H;
   mealRow(p2, y, "Supper", ["Supper2","ISSupper2","OSSupper2","OSSupper3","Suppertotal2"]); y -= ROW_H + 2;
 
-  drawText(p2, "Other", LBL_X, y + 3, { size: 9 }); addField(p2, "Other_2", QTY_X - 30, y, 200, FLD_H); addField(p2, "Other total2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
-  addField(p2, "Total", QTY_X - 30, y, 200, FLD_H); addField(p2, "Total3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
+  drawText(p2, "Other", LBL_X, y + 3, { size: 9 }); addField(p2, "Other_2", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Total", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Total3", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Other_3", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total3 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Other_4", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total4 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
+  addField(p2, "Other_5", LBL_X, y, OTHER_DESC_W, FLD_H); drawText(p2, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p2, "Other total5 2", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
 
   drawLine(p2, M, y + 14, M + CW, { color: BRAND, thickness: 1.5 });
   drawText(p2, "TOTAL EXPENSES", LBL_X, y, { font: helveticaBold, size: 10, color: BRAND });
   drawText(p2, "$", TOT_X - 14, y, { font: helveticaBold, size: 11, color: BRAND });
   addField(p2, "Total expense2", TOT_X, y - 4, TOT_W, 20, { fontSize: 11 }); y -= 36;
 
-  drawRect(p2, M, y - 6, CW, 56, { fill: ACCENT_BG, border: LINE });
+  drawRect(p2, M, y - 4, CW, 38, { fill: ACCENT_BG, border: LINE });
   drawText(p2, "Less: Amounts paid direct", LBL_X + 20, y + 24, { size: 9 });
   drawText(p2, "($", TOT_X - 16, y + 24, { size: 9 });
   addField(p2, "Amount pd", TOT_X, y + 20, TOT_W - 10, FLD_H);
