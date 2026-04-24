@@ -33,7 +33,8 @@ function calcMeal(meal) {
 // ── Totals ──
 function calcTotal() {
   const keys = ["regCheck", "travelCheck", "lodgingTotal", "mileageTotal",
-    "breakfastTotal", "lunchTotal", "supperTotal", "other1Total", "other2Total"];
+    "breakfastTotal", "lunchTotal", "supperTotal",
+    "other1Total", "other2Total", "other3Total", "other4Total", "other5Total"];
   sv("estimatedTotal", fmt(keys.reduce((s, k) => s + pf(gv(k)), 0)));
 }
 
@@ -64,7 +65,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Direct totals
-  ["regCheck", "travelCheck", "other1Total", "other2Total"].forEach((id) => {
+  ["regCheck", "travelCheck", "other1Total", "other2Total", "other3Total", "other4Total", "other5Total"].forEach((id) => {
     const el = $(id); if (el) el.addEventListener("input", calcTotal);
   });
 });

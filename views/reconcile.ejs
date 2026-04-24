@@ -221,56 +221,11 @@
             <td class="var-cell"><span id="var_mileage" class="var-zero">—</span></td>
           </tr>
 
-          <!-- Meals header row -->
+          <!-- Other header row -->
           <tr class="section-header-row">
             <td colspan="4" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
-              Meals &nbsp;<span style="font-weight:400;font-size:10px">— fixed per diem, carried over from request</span>
+              Other
             </td>
-          </tr>
-
-          <!-- Breakfast -->
-          <tr class="perdiem-row">
-            <td class="row-label">Breakfast</td>
-            <td class="est-cell"><span id="est_breakfast">—</span></td>
-            <td>
-              <span id="meal_breakfast_detail" class="meal-perdiem-detail"></span>
-              <input id="breakfastIS2" data-field type="hidden">
-              <input id="breakfastISRate2" data-field type="hidden">
-              <input id="breakfastOS2" data-field type="hidden">
-              <input id="breakfastOSRate2" data-field type="hidden">
-              <input id="breakfastTotal2" data-field type="hidden">
-            </td>
-            <td class="var-cell"><span class="perdiem-badge">Per Diem</span></td>
-          </tr>
-
-          <!-- Lunch -->
-          <tr class="perdiem-row">
-            <td class="row-label">Lunch</td>
-            <td class="est-cell"><span id="est_lunch">—</span></td>
-            <td>
-              <span id="meal_lunch_detail" class="meal-perdiem-detail"></span>
-              <input id="lunchIS2" data-field type="hidden">
-              <input id="lunchISRate2" data-field type="hidden">
-              <input id="lunchOS2" data-field type="hidden">
-              <input id="lunchOSRate2" data-field type="hidden">
-              <input id="lunchTotal2" data-field type="hidden">
-            </td>
-            <td class="var-cell"><span class="perdiem-badge">Per Diem</span></td>
-          </tr>
-
-          <!-- Supper -->
-          <tr class="perdiem-row">
-            <td class="row-label">Supper</td>
-            <td class="est-cell"><span id="est_supper">—</span></td>
-            <td>
-              <span id="meal_supper_detail" class="meal-perdiem-detail"></span>
-              <input id="supperIS2" data-field type="hidden">
-              <input id="supperISRate2" data-field type="hidden">
-              <input id="supperOS2" data-field type="hidden">
-              <input id="supperOSRate2" data-field type="hidden">
-              <input id="supperTotal2" data-field type="hidden">
-            </td>
-            <td class="var-cell"><span class="perdiem-badge">Per Diem</span></td>
           </tr>
 
           <!-- Other 1 -->
@@ -297,6 +252,106 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_other2" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Other 3 -->
+          <tr>
+            <td class="row-label"></td>
+            <td class="est-cell"><span id="est_other3">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="other3Desc2" data-field type="text" placeholder="Description" style="flex:1">
+                <input id="other3Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_other3" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Other 4 -->
+          <tr>
+            <td class="row-label"></td>
+            <td class="est-cell"><span id="est_other4">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="other4Desc2" data-field type="text" placeholder="Description" style="flex:1">
+                <input id="other4Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_other4" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Other 5 -->
+          <tr>
+            <td class="row-label"></td>
+            <td class="est-cell"><span id="est_other5">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px">
+                <input id="other5Desc2" data-field type="text" placeholder="Description" style="flex:1">
+                <input id="other5Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_other5" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Meals header row -->
+          <tr class="section-header-row">
+            <td colspan="4" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
+              Meals &nbsp;<span style="font-weight:400;font-size:10px">— per diem rates from request — adjust counts as needed</span>
+            </td>
+          </tr>
+
+          <!-- Breakfast -->
+          <tr>
+            <td class="row-label">Breakfast</td>
+            <td class="est-cell"><span id="est_breakfast">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px;align-items:center">
+                <input id="breakfastIS2" data-field type="text" placeholder="IS #" style="width:46px" oninput="recalcMeal('breakfast')">
+                <span id="meal_breakfast_is_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="breakfastOS2" data-field type="text" placeholder="OS #" style="width:46px" oninput="recalcMeal('breakfast')">
+                <span id="meal_breakfast_os_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="breakfastISRate2" data-field type="hidden">
+                <input id="breakfastOSRate2" data-field type="hidden">
+                <input id="breakfastTotal2" data-field type="hidden">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_breakfast" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Lunch -->
+          <tr>
+            <td class="row-label">Lunch</td>
+            <td class="est-cell"><span id="est_lunch">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px;align-items:center">
+                <input id="lunchIS2" data-field type="text" placeholder="IS #" style="width:46px" oninput="recalcMeal('lunch')">
+                <span id="meal_lunch_is_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="lunchOS2" data-field type="text" placeholder="OS #" style="width:46px" oninput="recalcMeal('lunch')">
+                <span id="meal_lunch_os_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="lunchISRate2" data-field type="hidden">
+                <input id="lunchOSRate2" data-field type="hidden">
+                <input id="lunchTotal2" data-field type="hidden">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_lunch" class="var-zero">—</span></td>
+          </tr>
+
+          <!-- Supper -->
+          <tr>
+            <td class="row-label">Supper</td>
+            <td class="est-cell"><span id="est_supper">—</span></td>
+            <td>
+              <div style="display:flex;gap:4px;align-items:center">
+                <input id="supperIS2" data-field type="text" placeholder="IS #" style="width:46px" oninput="recalcMeal('supper')">
+                <span id="meal_supper_is_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="supperOS2" data-field type="text" placeholder="OS #" style="width:46px" oninput="recalcMeal('supper')">
+                <span id="meal_supper_os_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="supperISRate2" data-field type="hidden">
+                <input id="supperOSRate2" data-field type="hidden">
+                <input id="supperTotal2" data-field type="hidden">
+              </div>
+            </td>
+            <td class="var-cell"><span id="var_supper" class="var-zero">—</span></td>
           </tr>
 
         </tbody>
