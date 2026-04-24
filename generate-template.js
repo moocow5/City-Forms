@@ -280,9 +280,9 @@ async function build() {
 
   mealRow(p2, y, "Breakfast", ["Breakfast2","ISBreak2","OSBreak2","OSBreak3","Breakfast total2"]); y -= ROW_H;
   mealRow(p2, y, "Lunch", ["Lunch2","ISLunch2","OSLunch2","OSLunch3","Lunchtotal2"]); y -= ROW_H;
-  mealRow(p2, y, "Supper", ["Supper2","ISSupper2","OSSupper2","OSSupper3","Suppertotal2"]); y -= ROW_H + 2;
+  mealRow(p2, y, "Supper", ["Supper2","ISSupper2","OSSupper2","OSSupper3","Suppertotal2"]); y -= ROW_H + 14;
 
-  drawLine(p2, M, y + 14, M + CW, { color: BRAND, thickness: 1.5 });
+  drawLine(p2, M, y + 24, M + CW, { color: BRAND, thickness: 1.5 });
   drawText(p2, "TOTAL EXPENSES", LBL_X, y, { font: helveticaBold, size: 10, color: BRAND });
   drawText(p2, "$", TOT_X - 14, y, { font: helveticaBold, size: 11, color: BRAND });
   addField(p2, "Total expense2", TOT_X, y - 4, TOT_W, 20, { fontSize: 11 }); y -= 52;
@@ -309,8 +309,6 @@ async function build() {
   y -= 4;
   drawLine(p2, M, y - 14, M + sigW, { color: DARK, thickness: 0.75 });
   addField(p2, "Department Head_2", M + sigW + 20, y - 16, sigW, FLD_H); y -= 32;
-  drawText(p2, "for expense report", M + 60, y + 16, { size: 7, color: GRAY });
-  drawText(p2, "for expense report", M + sigW + 20 + 60, y + 16, { size: 7, color: GRAY });
   drawText(p2, "revised 7-1-2022", M + CW - 80, M - 10, { size: 7, color: GRAY });
 
   const pdfBytes = await doc.save();
