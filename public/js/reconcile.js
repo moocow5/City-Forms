@@ -9,20 +9,24 @@ const pf = (v) => parseFloat(v) || 0;
 const fmt = (n) => (isNaN(n) || n === 0) ? "" : n.toFixed(2);
 const fmtMoney = (n) => isNaN(n) ? "—" : `$${n.toFixed(2)}`;
 
-// ── PO line definitions (used for auto-calculating amountPaid) ──
-const PO_LINES = [
-  { po: 'regPO',       amt: () => pf(gv('reg2')) },
-  { po: 'travelPO',    amt: () => pf(gv('travel2')) },
-  { po: 'lodgingPO',   amt: () => pf(gv('lodgingTotal2')) },
-  { po: 'mileagePO',   amt: () => pf(gv('mileageTotal2')) },
+// ── PO lines that flow into Less: Amounts Paid Direct ──
+const NON_MEAL_PO_LINES = [
+  { po: 'regPO',    amt: () => pf(gv('reg2')) },
+  { po: 'travelPO', amt: () => pf(gv('travel2')) },
+  { po: 'lodgingPO',amt: () => pf(gv('lodgingTotal2')) },
+  { po: 'mileagePO',amt: () => pf(gv('mileageTotal2')) },
+  { po: 'other1PO', amt: () => pf(gv('other1Total2')) },
+  { po: 'other2PO', amt: () => pf(gv('other2Total2')) },
+  { po: 'other3PO', amt: () => pf(gv('other3Total2')) },
+  { po: 'other4PO', amt: () => pf(gv('other4Total2')) },
+  { po: 'other5PO', amt: () => pf(gv('other5Total2')) },
+];
+
+// ── Meal PO lines flow into Less: Advance Money ──
+const MEAL_PO_LINES = [
   { po: 'breakfastPO', amt: () => pf(gv('breakfastTotal2')) },
   { po: 'lunchPO',     amt: () => pf(gv('lunchTotal2')) },
   { po: 'supperPO',    amt: () => pf(gv('supperTotal2')) },
-  { po: 'other1PO',    amt: () => pf(gv('other1Total2')) },
-  { po: 'other2PO',    amt: () => pf(gv('other2Total2')) },
-  { po: 'other3PO',    amt: () => pf(gv('other3Total2')) },
-  { po: 'other4PO',    amt: () => pf(gv('other4Total2')) },
-  { po: 'other5PO',    amt: () => pf(gv('other5Total2')) },
 ];
 
 // ── Estimated values loaded from SP ──
@@ -140,9 +144,15 @@ function recalcAll() {
   const total = Object.values(actuals).reduce((s, v) => s + v, 0);
   sv("totalExpense", fmt(total));
 
-  const amtPaid = PO_LINES.reduce((s, r) => gv(r.po) ? s + r.amt() : s, 0);
+  const amtPaid = NON_MEAL_PO_LINES.reduce((s, r) => gv(r.po) ? s + r.amt() : s, 0);
   sv('amountPaid', amtPaid ? fmt(amtPaid) : '');
-  sv('amountDue', fmt(total - amtPaid - pf(gv('advanceMoney2'))));
+
+  const mealPOTotal = MEAL_PO_LINES.reduce((s, r) => gv(r.po) ? s + r.amt() : s, 0);
+  const baseAdvance = pf(gv('advanceMoney'));
+  const totalAdvance = baseAdvance + mealPOTotal;
+  sv('advanceMoney2', totalAdvance ? fmt(totalAdvance) : '');
+
+  sv('amountDue', fmt(total - amtPaid - totalAdvance));
 
   setVariance("var_reg",       actuals.reg,       EST.reg);
   setVariance("var_travel",    actuals.travel,     EST.travel);
