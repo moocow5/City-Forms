@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Travel Rate Settings — City of North Platte</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <% if (embedded) { %>
+  <style>
+    .app-header { padding: 8px 16px; }
+    .app-header h1 { font-size: 14px; }
+    .container { padding: 16px 14px 40px; }
+    body { background: #fff; }
+    .card { box-shadow: var(--shadow-sm); }
+  </style>
+  <% } %>
+</head>
+<body>
+
+<!-- ══════ HEADER ══════ -->
+<header class="app-header">
+  <div style="display:flex;align-items:center;gap:14px">
+    <img src="/images/2022_CityLogo_WHITEFG.png" alt="City Seal" style="height:44px;width:44px">
+    <div>
+      <h1 style="margin:0;font-size:18px;letter-spacing:0.5px">City of North Platte</h1>
+      <span class="subtitle" style="font-size:11px;opacity:0.75;letter-spacing:1px;text-transform:uppercase">Administration</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <a href="/forms/travel-expense" class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;text-decoration:none">← Travel Request</a>
+    <% if (user) { %>
+      <div class="user-badge"><span class="dot"></span> <%= user.name %></div>
+      <a href="/auth/signout" class="btn btn-sm" style="color:#fff;text-decoration:none;opacity:0.8">Sign Out</a>
+    <% } else { %>
+      <% if (embedded) { %>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff" onclick="popupSignIn()">Sign In</button>
+      <% } else { %>
+        <a href="/auth/signin" class="btn btn-sm" style="background:rgba(255,255,255,0.15);color:#fff;text-decoration:none">Sign In</a>
+      <% } %>
+    <% } %>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ══════ SETTINGS CARD ══════ -->
+  <div class="card">
+    <div class="card-header">
+      <span>Default Travel Rates</span>
+    </div>
+    <div class="card-body">
+      <div id="saveStatus"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="mealBreakfastRate">Breakfast Per Diem ($)</label>
+          <input id="mealBreakfastRate" type="text" placeholder="0.00" value="<%= settings.mealBreakfastRate || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="mealLunchRate">Lunch Per Diem ($)</label>
+          <input id="mealLunchRate" type="text" placeholder="0.00" value="<%= settings.mealLunchRate || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="mealSupperRate">Supper Per Diem ($)</label>
+          <input id="mealSupperRate" type="text" placeholder="0.00" value="<%= settings.mealSupperRate || '' %>">
+        </div>
+        <div class="form-group">
+          <label for="mileageRate">Mileage Rate ($/mile)</label>
+          <input id="mileageRate" type="text" placeholder="0.000" value="<%= settings.mileageRate || '' %>">
+        </div>
+      </div>
+
+      <p style="margin:12px 0 20px;font-size:13px;color:var(--gray-500)">
+        These rates will pre-populate the meal and mileage fields on new travel requests.
+      </p>
+
+      <button id="btnSave" class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  async function saveSettings() {
+    const btn = document.getElementById('btnSave');
+    const statusEl = document.getElementById('saveStatus');
+    const body = {
+      mealBreakfastRate: document.getElementById('mealBreakfastRate').value.trim(),
+      mealLunchRate:     document.getElementById('mealLunchRate').value.trim(),
+      mealSupperRate:    document.getElementById('mealSupperRate').value.trim(),
+      mileageRate:       document.getElementById('mileageRate').value.trim()
+    };
+
+    btn.disabled = true;
+    statusEl.innerHTML = '';
+
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("Session expired. Please sign in again.");
+        }
+        let errMsg = res.statusText;
+        try {
+          const errBody = await res.json();
+          errMsg = errBody.error || errMsg;
+        } catch {
+          errMsg = (await res.text()) || errMsg;
+        }
+        throw new Error(errMsg);
+      }
+      statusEl.innerHTML = '<div class="toast toast-success" style="margin-bottom:12px">Settings saved successfully.</div>';
+    } catch (e) {
+      statusEl.innerHTML = '<div class="toast toast-error" style="margin-bottom:12px">Error saving settings: ' + e.message + '</div>';
+    } finally {
+      btn.disabled = false;
+    }
+  }
+</script>
+<% if (embedded) { %>
+<script>
+  function popupSignIn() {
+    const w = 500, h = 650;
+    const left = (screen.width - w) / 2;
+    const top = (screen.height - h) / 2;
+    window.open(
+      "/auth/signin?embedded=1",
+      "CityFormsAuth",
+      "width=" + w + ",height=" + h + ",top=" + top + ",left=" + left + ",toolbar=no,menubar=no"
+    );
+  }
+  window.addEventListener("message", (e) => {
+    if (e.data && e.data.type === "auth-complete") { location.reload(); }
+  });
+</script>
+<% } %>
+</body>
+</html>

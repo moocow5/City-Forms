@@ -121,20 +121,14 @@
       <input id="mileageMiles" type="hidden">
       <input id="mileageRate" type="hidden">
       <input id="mileageTotal" type="hidden">
-      <input id="breakfastIS" type="hidden">
-      <input id="breakfastISRate" type="hidden">
-      <input id="breakfastOS" type="hidden">
-      <input id="breakfastOSRate" type="hidden">
+      <input id="breakfast" type="hidden">
+      <input id="breakfastRate" type="hidden">
       <input id="breakfastTotal" type="hidden">
-      <input id="lunchIS" type="hidden">
-      <input id="lunchISRate" type="hidden">
-      <input id="lunchOS" type="hidden">
-      <input id="lunchOSRate" type="hidden">
+      <input id="lunch" type="hidden">
+      <input id="lunchRate" type="hidden">
       <input id="lunchTotal" type="hidden">
-      <input id="supperIS" type="hidden">
-      <input id="supperISRate" type="hidden">
-      <input id="supperOS" type="hidden">
-      <input id="supperOSRate" type="hidden">
+      <input id="supper" type="hidden">
+      <input id="supperRate" type="hidden">
       <input id="supperTotal" type="hidden">
       <input id="other1Desc" type="hidden">
       <input id="other1Total" type="hidden">
@@ -165,10 +159,11 @@
       <table class="variance-table">
         <thead>
           <tr>
-            <th style="width:28%">Category</th>
-            <th style="width:24%;text-align:right">Estimated</th>
-            <th style="width:30%">Actual</th>
-            <th style="width:18%;text-align:right">Variance</th>
+            <th style="width:25%">Category</th>
+            <th style="width:20%;text-align:right">Estimated</th>
+            <th style="width:28%">Actual</th>
+            <th style="width:15%;text-align:right">Variance</th>
+            <th style="width:12%;text-align:left;padding-left:6px">PO #</th>
           </tr>
         </thead>
         <tbody>
@@ -181,6 +176,7 @@
               <input id="reg2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()">
             </td>
             <td class="var-cell"><span id="var_reg" class="var-zero">—</span></td>
+            <td><input id="regPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Commercial Travel -->
@@ -191,6 +187,7 @@
               <input id="travel2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()">
             </td>
             <td class="var-cell"><span id="var_travel" class="var-zero">—</span></td>
+            <td><input id="travelPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Lodging -->
@@ -205,6 +202,7 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_lodging" class="var-zero">—</span></td>
+            <td><input id="lodgingPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Mileage -->
@@ -219,11 +217,12 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_mileage" class="var-zero">—</span></td>
+            <td><input id="mileagePO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Other header row -->
           <tr class="section-header-row">
-            <td colspan="4" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
+            <td colspan="5" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
               Other
             </td>
           </tr>
@@ -239,6 +238,7 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_other1" class="var-zero">—</span></td>
+            <td><input id="other1PO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Other 2 -->
@@ -252,6 +252,7 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_other2" class="var-zero">—</span></td>
+            <td><input id="other2PO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Other 3 -->
@@ -265,6 +266,7 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_other3" class="var-zero">—</span></td>
+            <td><input id="other3PO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Other 4 -->
@@ -278,6 +280,7 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_other4" class="var-zero">—</span></td>
+            <td><input id="other4PO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Other 5 -->
@@ -291,12 +294,13 @@
               </div>
             </td>
             <td class="var-cell"><span id="var_other5" class="var-zero">—</span></td>
+            <td><input id="other5PO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Meals header row -->
           <tr class="section-header-row">
-            <td colspan="4" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
-              Meals &nbsp;<span style="font-weight:400;font-size:10px">— per diem rates from request — adjust counts as needed</span>
+            <td colspan="5" style="padding:10px 10px 4px;font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;background:var(--gray-50)">
+              Meals &nbsp;<span style="font-weight:400;font-size:10px">— per diem rates from request</span>
             </td>
           </tr>
 
@@ -306,16 +310,14 @@
             <td class="est-cell"><span id="est_breakfast">—</span></td>
             <td>
               <div style="display:flex;gap:4px;align-items:center">
-                <input id="breakfastIS2" data-field type="text" placeholder="IS #" style="width:46px" oninput="recalcMeal('breakfast')">
-                <span id="meal_breakfast_is_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
-                <input id="breakfastOS2" data-field type="text" placeholder="OS #" style="width:46px" oninput="recalcMeal('breakfast')">
-                <span id="meal_breakfast_os_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
-                <input id="breakfastISRate2" data-field type="hidden">
-                <input id="breakfastOSRate2" data-field type="hidden">
+                <input id="breakfast2" data-field type="text" placeholder="#" style="width:55px" oninput="recalcMeal('breakfast')">
+                <span id="meal_breakfast_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="breakfastRate2" data-field type="hidden">
                 <input id="breakfastTotal2" data-field type="hidden">
               </div>
             </td>
             <td class="var-cell"><span id="var_breakfast" class="var-zero">—</span></td>
+            <td><input id="breakfastPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Lunch -->
@@ -324,16 +326,14 @@
             <td class="est-cell"><span id="est_lunch">—</span></td>
             <td>
               <div style="display:flex;gap:4px;align-items:center">
-                <input id="lunchIS2" data-field type="text" placeholder="IS #" style="width:46px" oninput="recalcMeal('lunch')">
-                <span id="meal_lunch_is_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
-                <input id="lunchOS2" data-field type="text" placeholder="OS #" style="width:46px" oninput="recalcMeal('lunch')">
-                <span id="meal_lunch_os_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
-                <input id="lunchISRate2" data-field type="hidden">
-                <input id="lunchOSRate2" data-field type="hidden">
+                <input id="lunch2" data-field type="text" placeholder="#" style="width:55px" oninput="recalcMeal('lunch')">
+                <span id="meal_lunch_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="lunchRate2" data-field type="hidden">
                 <input id="lunchTotal2" data-field type="hidden">
               </div>
             </td>
             <td class="var-cell"><span id="var_lunch" class="var-zero">—</span></td>
+            <td><input id="lunchPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
           <!-- Supper -->
@@ -342,16 +342,14 @@
             <td class="est-cell"><span id="est_supper">—</span></td>
             <td>
               <div style="display:flex;gap:4px;align-items:center">
-                <input id="supperIS2" data-field type="text" placeholder="IS #" style="width:46px" oninput="recalcMeal('supper')">
-                <span id="meal_supper_is_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
-                <input id="supperOS2" data-field type="text" placeholder="OS #" style="width:46px" oninput="recalcMeal('supper')">
-                <span id="meal_supper_os_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
-                <input id="supperISRate2" data-field type="hidden">
-                <input id="supperOSRate2" data-field type="hidden">
+                <input id="supper2" data-field type="text" placeholder="#" style="width:55px" oninput="recalcMeal('supper')">
+                <span id="meal_supper_rate" style="font-size:11px;color:var(--gray-400);white-space:nowrap"></span>
+                <input id="supperRate2" data-field type="hidden">
                 <input id="supperTotal2" data-field type="hidden">
               </div>
             </td>
             <td class="var-cell"><span id="var_supper" class="var-zero">—</span></td>
+            <td><input id="supperPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px"></td>
           </tr>
 
         </tbody>
@@ -363,6 +361,7 @@
               <input id="totalExpense" data-field type="text" class="total-field" readonly style="font-weight:700;border-color:var(--brand);color:var(--brand)">
             </td>
             <td class="var-cell" style="font-weight:700"><span id="var_total" class="var-zero">—</span></td>
+            <td></td>
           </tr>
         </tfoot>
       </table>
@@ -370,8 +369,8 @@
       <!-- ── Deductions ── -->
       <div class="form-grid" style="margin-top:20px">
         <div class="form-group">
-          <label>Less: Amounts Paid Direct ($)</label>
-          <input id="amountPaid" data-field type="text" placeholder="0.00" oninput="recalcAll()">
+          <label>Less: Amounts Paid Direct ($) <span style="font-size:11px;color:var(--gray-400);font-weight:400">(auto-calculated from PO lines)</span></label>
+          <input id="amountPaid" data-field type="text" placeholder="0.00" readonly style="background:var(--gray-50)">
         </div>
         <div class="form-group">
           <label>Less: Advance Money ($)</label>

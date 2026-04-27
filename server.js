@@ -8,6 +8,7 @@ const https = require("https");
 const authRoutes = require("./routes/auth");
 const formRoutes = require("./routes/forms");
 const apiRoutes = require("./routes/api");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -64,6 +65,7 @@ app.use((req, res, next) => {
 app.use("/auth", authRoutes);
 app.use("/forms", formRoutes);
 app.use("/api", apiRoutes);
+app.use("/admin", adminRoutes);
 
 app.get("/", (req, res) => {
   res.redirect("/forms/travel-expense");

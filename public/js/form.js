@@ -24,8 +24,7 @@ function calcMileage() {
 // ── Auto-calc: Meals ──
 function calcMeal(meal) {
   sv(`${meal}Total`, fmt(
-    pf(gv(`${meal}IS`)) * pf(gv(`${meal}ISRate`)) +
-    pf(gv(`${meal}OS`)) * pf(gv(`${meal}OSRate`))
+    pf(gv(meal)) * pf(gv(`${meal}Rate`))
   ));
   calcTotal();
 }
@@ -59,8 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Meals
   ["breakfast", "lunch", "supper"].forEach((meal) => {
-    ["IS", "ISRate", "OS", "OSRate"].forEach((sfx) => {
-      const el = $(meal + sfx); if (el) el.addEventListener("input", () => calcMeal(meal));
+    [meal, `${meal}Rate`].forEach((id) => {
+      const el = $(id); if (el) el.addEventListener("input", () => calcMeal(meal));
     });
   });
 

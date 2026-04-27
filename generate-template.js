@@ -124,8 +124,6 @@ async function build() {
 
   const LBL_X = M + 8, QTY_X = M + 160, RATE_X = M + 280;
   const TOT_X = M + CW - 115, TOT_W = 108, FLD_H = 16, ROW_H = 20;
-  const IS_X = QTY_X, OS_X = QTY_X + 100;
-
   drawText(p1, "Registration", LBL_X, y + 3, { size: 9 }); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Registration", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
   drawText(p1, "Commercial Travel", LBL_X, y + 3, { size: 9 }); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Travel total", TOT_X, y, TOT_W, FLD_H); y -= ROW_H;
 
@@ -155,30 +153,28 @@ async function build() {
   addField(p1, "Other 5", OTHER_FIELD_X, y, OTHER_DESC_W, FLD_H); drawText(p1, "$", TOT_X - 8, y + 3, { size: 8, color: GRAY }); addField(p1, "Other total 5", TOT_X, y, TOT_W, FLD_H); y -= ROW_H + 4;
 
   // Meals
+  const MEAL_CNT_X = QTY_X;
+  const MEAL_RATE_X = QTY_X + 65;
+
   drawRect(p1, M, y - 2, CW, 16, { fill: ACCENT_BG });
   drawText(p1, "MEALS", LBL_X, y + 1, { font: helveticaBold, size: 8, color: BRAND });
-  drawText(p1, "# In State", IS_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p1, "$ Rate", IS_X + 45, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p1, "# Out State", OS_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p1, "$ Rate", OS_X + 50, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p1, "Total", TOT_X + 35, y + 1, { font: helveticaBold, size: 7, color: GRAY });
+  drawText(p1, "Count", MEAL_CNT_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
+  drawText(p1, "Per Diem Rate", MEAL_RATE_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
+  drawText(p1, "Total", TOT_X + 30, y + 1, { font: helveticaBold, size: 7, color: GRAY });
   y -= 18;
 
   function mealRow(page, yy, label, names) {
     drawText(page, label, LBL_X, yy + 3, { size: 9 });
-    addField(page, names[0], IS_X, yy, 38, FLD_H);
-    drawText(page, "$", IS_X + 39, yy + 3, { size: 7, color: GRAY });
-    addField(page, names[1], IS_X + 46, yy, 46, FLD_H);
-    addField(page, names[2], OS_X, yy, 38, FLD_H);
-    drawText(page, "$", OS_X + 39, yy + 3, { size: 7, color: GRAY });
-    addField(page, names[3], OS_X + 46, yy, 46, FLD_H);
+    addField(page, names[0], MEAL_CNT_X, yy, 55, FLD_H);
+    drawText(page, "$", MEAL_RATE_X - 8, yy + 3, { size: 7, color: GRAY });
+    addField(page, names[1], MEAL_RATE_X, yy, 80, FLD_H);
     drawText(page, "$", TOT_X - 8, yy + 3, { size: 8, color: GRAY });
-    addField(page, names[4], TOT_X, yy, TOT_W, FLD_H);
+    addField(page, names[2], TOT_X, yy, TOT_W, FLD_H);
   }
 
-  mealRow(p1, y, "Breakfast", ["Breakfast","ISBreak1","OutState1","OSBreak1","Breakfast total 1"]); y -= ROW_H;
-  mealRow(p1, y, "Lunch", ["Lunch","ISLunch1","OStatelunch1","OSLunch1","Lunchtotal1"]); y -= ROW_H;
-  mealRow(p1, y, "Supper", ["Supper","ISSupper1","OutState3","OSSupper1","Suppertotal1"]); y -= ROW_H;
+  mealRow(p1, y, "Breakfast", ["Breakfast","breakfastRate","Breakfast total 1"]); y -= ROW_H;
+  mealRow(p1, y, "Lunch",     ["Lunch","lunchRate","Lunchtotal1"]); y -= ROW_H;
+  mealRow(p1, y, "Supper",    ["Supper","supperRate","Suppertotal1"]); y -= ROW_H;
 
   // ── Estimated Trip Total (centered in gap between blue line and advance box) ──
   const dividerY = y + 14;
@@ -271,16 +267,14 @@ async function build() {
 
   drawRect(p2, M, y - 2, CW, 16, { fill: ACCENT_BG });
   drawText(p2, "MEALS", LBL_X, y + 1, { font: helveticaBold, size: 8, color: BRAND });
-  drawText(p2, "# In State", IS_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p2, "Rate", IS_X + 45, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p2, "# Out State", OS_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p2, "Rate", OS_X + 50, y + 1, { font: helveticaBold, size: 7, color: GRAY });
-  drawText(p2, "Total", TOT_X + 35, y + 1, { font: helveticaBold, size: 7, color: GRAY });
+  drawText(p2, "Count", MEAL_CNT_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
+  drawText(p2, "Per Diem Rate", MEAL_RATE_X, y + 1, { font: helveticaBold, size: 7, color: GRAY });
+  drawText(p2, "Total", TOT_X + 30, y + 1, { font: helveticaBold, size: 7, color: GRAY });
   y -= 20;
 
-  mealRow(p2, y, "Breakfast", ["Breakfast2","ISBreak2","OSBreak2","OSBreak3","Breakfast total2"]); y -= ROW_H;
-  mealRow(p2, y, "Lunch", ["Lunch2","ISLunch2","OSLunch2","OSLunch3","Lunchtotal2"]); y -= ROW_H;
-  mealRow(p2, y, "Supper", ["Supper2","ISSupper2","OSSupper2","OSSupper3","Suppertotal2"]); y -= ROW_H + 14;
+  mealRow(p2, y, "Breakfast", ["Breakfast2","breakfastRate2","Breakfast total2"]); y -= ROW_H;
+  mealRow(p2, y, "Lunch",     ["Lunch2","lunchRate2","Lunchtotal2"]); y -= ROW_H;
+  mealRow(p2, y, "Supper",    ["Supper2","supperRate2","Suppertotal2"]); y -= ROW_H + 14;
 
   drawLine(p2, M, y + 24, M + CW, { color: BRAND, thickness: 1.5 });
   drawText(p2, "TOTAL EXPENSES", LBL_X, y, { font: helveticaBold, size: 10, color: BRAND });

@@ -9,6 +9,22 @@ const pf = (v) => parseFloat(v) || 0;
 const fmt = (n) => (isNaN(n) || n === 0) ? "" : n.toFixed(2);
 const fmtMoney = (n) => isNaN(n) ? "—" : `$${n.toFixed(2)}`;
 
+// ── PO line definitions (used for auto-calculating amountPaid) ──
+const PO_LINES = [
+  { po: 'regPO',       amt: () => pf(gv('reg2')) },
+  { po: 'travelPO',    amt: () => pf(gv('travel2')) },
+  { po: 'lodgingPO',   amt: () => pf(gv('lodgingTotal2')) },
+  { po: 'mileagePO',   amt: () => pf(gv('mileageTotal2')) },
+  { po: 'breakfastPO', amt: () => pf(gv('breakfastTotal2')) },
+  { po: 'lunchPO',     amt: () => pf(gv('lunchTotal2')) },
+  { po: 'supperPO',    amt: () => pf(gv('supperTotal2')) },
+  { po: 'other1PO',    amt: () => pf(gv('other1Total2')) },
+  { po: 'other2PO',    amt: () => pf(gv('other2Total2')) },
+  { po: 'other3PO',    amt: () => pf(gv('other3Total2')) },
+  { po: 'other4PO',    amt: () => pf(gv('other4Total2')) },
+  { po: 'other5PO',    amt: () => pf(gv('other5Total2')) },
+];
+
 // ── Estimated values loaded from SP ──
 const EST = {
   reg: 0, travel: 0, lodging: 0, mileage: 0,
@@ -50,28 +66,22 @@ function loadEstimates(fd) {
 // ── Copy meal per diem values into section-2 fields; counts become editable defaults ──
 function copyMealPerDiem(fd) {
   ["breakfast", "lunch", "supper"].forEach((meal) => {
-    // Always copy rates (hidden, used for calculation)
-    sv(`${meal}ISRate2`, fd[`${meal}ISRate`] || "");
-    sv(`${meal}OSRate2`, fd[`${meal}OSRate`] || "");
-    // Only default counts from original request if not already set by saved reconciliation data
-    if (!gv(`${meal}IS2`)) sv(`${meal}IS2`, fd[`${meal}IS`] || "");
-    if (!gv(`${meal}OS2`)) sv(`${meal}OS2`, fd[`${meal}OS`] || "");
-    // Compute and store total from whatever counts are now set
-    const total = pf(gv(`${meal}IS2`)) * pf(fd[`${meal}ISRate`]) +
-                  pf(gv(`${meal}OS2`)) * pf(fd[`${meal}OSRate`]);
+    // Always copy rate (hidden, used for calculation)
+    sv(`${meal}Rate2`, fd[`${meal}Rate`] || "");
+    // Only default count from original request if not already set by saved reconciliation data
+    if (!gv(`${meal}2`)) sv(`${meal}2`, fd[meal] || "");
+    // Compute and store total from whatever count is now set
+    const total = pf(gv(`${meal}2`)) * pf(fd[`${meal}Rate`]);
     sv(`${meal}Total2`, fmt(total));
     updateMealRateDisplay(meal, fd);
   });
 }
 
-// ── Update the rate label spans shown beside count inputs ──
+// ── Update the rate label span shown beside count input ──
 function updateMealRateDisplay(meal, fd) {
-  const isr = pf(fd ? fd[`${meal}ISRate`] : gv(`${meal}ISRate2`));
-  const osr = pf(fd ? fd[`${meal}OSRate`] : gv(`${meal}OSRate2`));
-  const isEl = $(`meal_${meal}_is_rate`);
-  const osEl = $(`meal_${meal}_os_rate`);
-  if (isEl) isEl.textContent = isr ? `×$${isr.toFixed(2)} IS` : "";
-  if (osEl) osEl.textContent = osr ? `×$${osr.toFixed(2)} OS` : "";
+  const rate = pf(fd ? fd[`${meal}Rate`] : gv(`${meal}Rate2`));
+  const el = $(`meal_${meal}_rate`);
+  if (el) el.textContent = rate ? `×$${rate.toFixed(2)}` : "";
 }
 
 // ── innerHTML helper for span elements ──
@@ -103,10 +113,9 @@ function recalcMileage() {
   recalcAll();
 }
 
-// ── Calc: individual meal (counts editable, rates fixed from request) ──
+// ── Calc: individual meal (count editable, rate fixed from request) ──
 function recalcMeal(meal) {
-  const total = pf(gv(`${meal}IS2`)) * pf(gv(`${meal}ISRate2`)) +
-                pf(gv(`${meal}OS2`)) * pf(gv(`${meal}OSRate2`));
+  const total = pf(gv(`${meal}2`)) * pf(gv(`${meal}Rate2`));
   sv(`${meal}Total2`, fmt(total));
   recalcAll();
 }
@@ -130,7 +139,10 @@ function recalcAll() {
 
   const total = Object.values(actuals).reduce((s, v) => s + v, 0);
   sv("totalExpense", fmt(total));
-  sv("amountDue", fmt(total - pf(gv("amountPaid")) - pf(gv("advanceMoney2"))));
+
+  const amtPaid = PO_LINES.reduce((s, r) => gv(r.po) ? s + r.amt() : s, 0);
+  sv('amountPaid', amtPaid ? fmt(amtPaid) : '');
+  sv('amountDue', fmt(total - amtPaid - pf(gv('advanceMoney2'))));
 
   setVariance("var_reg",       actuals.reg,       EST.reg);
   setVariance("var_travel",    actuals.travel,     EST.travel);
@@ -201,9 +213,9 @@ async function pullIntoForm() {
       "regCheck","travelCheck",
       "lodgingNights","lodgingRate","lodgingTotal",
       "mileageMiles","mileageRate","mileageTotal",
-      "breakfastIS","breakfastISRate","breakfastOS","breakfastOSRate","breakfastTotal",
-      "lunchIS","lunchISRate","lunchOS","lunchOSRate","lunchTotal",
-      "supperIS","supperISRate","supperOS","supperOSRate","supperTotal",
+      "breakfast","breakfastRate","breakfastTotal",
+      "lunch","lunchRate","lunchTotal",
+      "supper","supperRate","supperTotal",
       "other1Desc","other1Total","other2Desc","other2Total",
       "other3Desc","other3Total","other4Desc","other4Total","other5Desc","other5Total",
       "estimatedTotal","advanceMoney","deptHead","cityAdmin","approvalDate"
@@ -217,9 +229,14 @@ async function pullIntoForm() {
     const reconFields = [
       "reg2","travel2","lodgingNights2","lodgingRate2","lodgingTotal2",
       "mileageMiles2","mileageRate2","mileageTotal2",
-      "breakfastIS2","breakfastOS2","lunchIS2","lunchOS2","supperIS2","supperOS2",
+      "breakfast2","breakfastRate2","breakfastTotal2",
+      "lunch2","lunchRate2","lunchTotal2",
+      "supper2","supperRate2","supperTotal2",
       "other1Desc2","other1Total2","other2Desc2","other2Total2",
       "other3Desc2","other3Total2","other4Desc2","other4Total2","other5Desc2","other5Total2",
+      "regPO","travelPO","lodgingPO","mileagePO",
+      "breakfastPO","lunchPO","supperPO",
+      "other1PO","other2PO","other3PO","other4PO","other5PO",
       "amountPaid","advanceMoney2","deptHead2"
     ];
     reconFields.forEach((key) => { if (fd[key]) sv(key, fd[key]); });
@@ -283,9 +300,9 @@ async function generatePDF() {
     "regCheck","travelCheck",
     "lodgingNights","lodgingRate","lodgingTotal",
     "mileageMiles","mileageRate","mileageTotal",
-    "breakfastIS","breakfastISRate","breakfastOS","breakfastOSRate","breakfastTotal",
-    "lunchIS","lunchISRate","lunchOS","lunchOSRate","lunchTotal",
-    "supperIS","supperISRate","supperOS","supperOSRate","supperTotal",
+    "breakfast","breakfastRate","breakfastTotal",
+    "lunch","lunchRate","lunchTotal",
+    "supper","supperRate","supperTotal",
     "other1Desc","other1Total","other2Desc","other2Total",
     "other3Desc","other3Total","other4Desc","other4Total","other5Desc","other5Total",
     "estimatedTotal","advanceMoney","deptHead","cityAdmin","approvalDate"
@@ -327,18 +344,20 @@ function clearActuals() {
   const actualIds = [
     "reg2","travel2","lodgingNights2","lodgingRate2","lodgingTotal2",
     "mileageMiles2","mileageRate2","mileageTotal2",
-    "breakfastIS2","breakfastISRate2","breakfastOS2","breakfastOSRate2","breakfastTotal2",
-    "lunchIS2","lunchISRate2","lunchOS2","lunchOSRate2","lunchTotal2",
-    "supperIS2","supperISRate2","supperOS2","supperOSRate2","supperTotal2",
+    "breakfast2","breakfastRate2","breakfastTotal2",
+    "lunch2","lunchRate2","lunchTotal2",
+    "supper2","supperRate2","supperTotal2",
     "other1Desc2","other1Total2","other2Desc2","other2Total2",
     "other3Desc2","other3Total2","other4Desc2","other4Total2","other5Desc2","other5Total2",
+    "regPO","travelPO","lodgingPO","mileagePO",
+    "breakfastPO","lunchPO","supperPO",
+    "other1PO","other2PO","other3PO","other4PO","other5PO",
     "totalExpense","amountPaid","advanceMoney2","amountDue","deptHead2"
   ];
   actualIds.forEach((id) => sv(id, ""));
   // Clear rate display labels
   ["breakfast","lunch","supper"].forEach((meal) => {
-    const isEl = $(`meal_${meal}_is_rate`); if (isEl) isEl.textContent = "";
-    const osEl = $(`meal_${meal}_os_rate`); if (osEl) osEl.textContent = "";
+    const el = $(`meal_${meal}_rate`); if (el) el.textContent = "";
   });
   recalcAll();
   $("pdfStatus").innerHTML = "";

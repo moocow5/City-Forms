@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const sp = require("../services/sharepoint");
 const { generatePDF, generateReconcilePDF } = require("../services/pdf");
+const settings = require("../services/settings");
 const multer = require("multer") || null; // optional — for PDF template upload
 const fs = require("fs/promises");
 const path = require("path");
@@ -147,6 +148,38 @@ router.post("/generate-reconcile-pdf", async (req, res) => {
   } catch (err) {
     console.error("Reconcile PDF error:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/settings — return current rate defaults
+router.get("/settings", async (req, res) => {
+  if (!req.session || !req.session.accessToken) {
+    return res.json({});
+  }
+  try {
+    const token = req.session.accessToken;
+    const siteId = req.session.spSiteId;
+    if (!siteId) return res.json({});
+    const data = await settings.getSettings(token, siteId);
+    res.json(data);
+  } catch (e) {
+    res.json({});
+  }
+});
+
+// POST /api/settings — save rate defaults
+router.post("/settings", async (req, res) => {
+  if (!req.session || !req.session.accessToken) {
+    return res.status(401).json({ error: "Not authenticated" });
+  }
+  try {
+    const token = req.session.accessToken;
+    const siteId = req.session.spSiteId;
+    if (!siteId) return res.status(400).json({ error: "No site connected" });
+    await settings.saveSettings(token, siteId, req.body);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
 });
 
