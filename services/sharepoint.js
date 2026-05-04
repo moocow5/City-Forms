@@ -14,6 +14,7 @@ const SP_FIELDS = [
   "Breakfast", "BreakfastRate", "Breakfast_x0020_Cost",
   "Lunch", "LunchRate", "Lunch_x0020_Cost",
   "Dinner", "DinnerRate", "Dinner_x0020_Cost",
+  "EstimatedRegistration",
   "Total_x0020_Requested_x0020_Amou", "AuthorLookupId",
   // Reconciliation actuals
   "ActualRegistration", "ActualTravel",
@@ -182,6 +183,7 @@ function mapItemToForm(item) {
     fromDate: parseDate(f.TravelStartDate),
     toDate: parseDate(f.TravelEndDate),
     travelCheck: parseMoney(f.EstimatedAirfare),
+    regCheck:    parseMoney(f.EstimatedRegistration),
     other1Desc: f.Other1Desc || (f.Airline ? `Airfare: ${f.Airline}` : ""),
     other1Total: parseMoney(f.Other1Total),
     other2Desc: f.Other2Desc || "",
@@ -194,7 +196,12 @@ function mapItemToForm(item) {
     other5Total: parseMoney(f.Other5Total),
     lodgingNights: parseNum(f.Hotel_x0020_Rate),
     lodgingRate: parseMoney(f.EstimatedHotelCost),
-    lodgingTotal: parseCalc(f.Hotel_x0020_Cost),
+    lodgingTotal: (() => {
+      const nights = parseFloat(f.Hotel_x0020_Rate) || 0;
+      const rate   = parseFloat(f.EstimatedHotelCost) || 0;
+      const total  = nights * rate;
+      return total > 0 ? total.toFixed(2) : "";
+    })(),
     mileageMiles: f.Mileage || "",
     mileageRate: parseMoney(f.MileageRate),
     mileageTotal: parseCalc(f.Mileage_x0020_Cost),
@@ -325,7 +332,8 @@ function mapFormToFields(formData) {
     Department:       s(formData.department),
     TravelStartDate:  s(formData.fromDate) ? new Date(formData.fromDate).toISOString() : null,
     TravelEndDate:    s(formData.toDate)   ? new Date(formData.toDate).toISOString()   : null,
-    EstimatedAirfare: n(formData.travelCheck),
+    EstimatedAirfare:      n(formData.travelCheck),
+    EstimatedRegistration: n(formData.regCheck),
     Hotel_x0020_Rate: n(formData.lodgingNights),
     EstimatedHotelCost: n(formData.lodgingRate),
     Mileage:          s(formData.mileageMiles),
