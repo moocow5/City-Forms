@@ -10,7 +10,16 @@ function requireAuth(req, res, next) {
   next();
 }
 
-router.get("/settings", requireAuth, async (req, res) => {
+function requireAdmin(req, res, next) {
+  const adminEmails = (process.env.ADMIN_EMAILS || "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+  const userEmail = (req.session.user?.username || "").toLowerCase();
+  if (!adminEmails.length || !adminEmails.includes(userEmail)) {
+    return res.status(403).send("Forbidden: admin access required.");
+  }
+  next();
+}
+
+router.get("/settings", requireAuth, requireAdmin, async (req, res) => {
   const token = req.session.accessToken;
   const siteId = req.session.spSiteId;
   let currentSettings = {};
@@ -20,7 +29,8 @@ router.get("/settings", requireAuth, async (req, res) => {
       currentSettings = await settings.getSettings(token, siteId);
     }
   } catch (e) {
-    error = e.message;
+    console.error("Admin get settings error:", e);
+    error = "Failed to load settings.";
   }
   res.render("admin-settings", {
     user: req.session.account || null,

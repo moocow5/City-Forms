@@ -3,7 +3,6 @@ const router = express.Router();
 const sp = require("../services/sharepoint");
 const { generatePDF, generateReconcilePDF } = require("../services/pdf");
 const settings = require("../services/settings");
-const multer = require("multer") || null; // optional — for PDF template upload
 const fs = require("fs/promises");
 const path = require("path");
 
@@ -11,6 +10,16 @@ const path = require("path");
 function requireAuth(req, res, next) {
   if (!req.session.accessToken) {
     return res.status(401).json({ error: "Not signed in" });
+  }
+  next();
+}
+
+// Middleware: require admin (email must be in ADMIN_EMAILS env var)
+function requireAdmin(req, res, next) {
+  const adminEmails = (process.env.ADMIN_EMAILS || "").split(",").map((e) => e.trim().toLowerCase()).filter(Boolean);
+  const userEmail = (req.session.user?.username || "").toLowerCase();
+  if (!adminEmails.length || !adminEmails.includes(userEmail)) {
+    return res.status(403).json({ error: "Forbidden" });
   }
   next();
 }
@@ -24,7 +33,8 @@ router.get("/items", requireAuth, async (req, res) => {
     const items = await sp.getItems(token, siteId, listId);
     res.json({ items });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Get items error:", err);
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
@@ -38,20 +48,8 @@ router.get("/items/:id/form-data", requireAuth, async (req, res) => {
     const formData = sp.mapItemToForm(item);
     res.json({ formData });
   } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// GET /api/items/:id/debug — return raw SP fields for debugging
-router.get("/items/:id/debug", requireAuth, async (req, res) => {
-  try {
-    const token = req.session.accessToken;
-    const siteId = req.session.spSiteId || (await sp.getSiteId(token));
-    const listId = req.session.spListId || (await sp.getListId(token, siteId));
-    const item = await sp.getItem(token, siteId, listId, req.params.id);
-    res.json({ id: item.id, requesterName: item.requesterName, fields: item.fields });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Get item form-data error:", err);
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
@@ -64,8 +62,8 @@ router.post("/items", requireAuth, async (req, res) => {
     const newId = await sp.createItem(token, siteId, listId, req.body);
     res.json({ id: newId });
   } catch (err) {
-    console.error("Create item error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Create item error:", err);
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
@@ -78,8 +76,8 @@ router.patch("/items/:id/reconcile", requireAuth, async (req, res) => {
     await sp.saveReconciliation(token, siteId, listId, req.params.id, req.body);
     res.json({ ok: true });
   } catch (err) {
-    console.error("Save reconciliation error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Save reconciliation error:", err);
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
@@ -92,13 +90,13 @@ router.patch("/items/:id", requireAuth, async (req, res) => {
     await sp.updateItem(token, siteId, listId, req.params.id, req.body);
     res.json({ ok: true });
   } catch (err) {
-    console.error("Update item error:", err.message);
-    res.status(500).json({ error: err.message });
+    console.error("Update item error:", err);
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
 // POST /api/generate-pdf — fill PDF template with form data, return PDF file
-router.post("/generate-pdf", async (req, res) => {
+router.post("/generate-pdf", requireAuth, async (req, res) => {
   try {
     const formData = req.body;
     const templateName = "travel-expense-template.pdf";
@@ -125,12 +123,12 @@ router.post("/generate-pdf", async (req, res) => {
     res.send(pdfBuffer);
   } catch (err) {
     console.error("PDF generation error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
 // POST /api/generate-reconcile-pdf — fill page 2 of template with reconciliation data
-router.post("/generate-reconcile-pdf", async (req, res) => {
+router.post("/generate-reconcile-pdf", requireAuth, async (req, res) => {
   try {
     const templatePath = path.join(__dirname, "..", "public", "templates", "travel-expense-template.pdf");
     try { await fs.access(templatePath); } catch {
@@ -147,15 +145,12 @@ router.post("/generate-reconcile-pdf", async (req, res) => {
     res.send(pdfBuffer);
   } catch (err) {
     console.error("Reconcile PDF error:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 
-// GET /api/settings — return current rate defaults
-router.get("/settings", async (req, res) => {
-  if (!req.session || !req.session.accessToken) {
-    return res.json({});
-  }
+// GET /api/settings — return current rate defaults (admin only)
+router.get("/settings", requireAuth, requireAdmin, async (req, res) => {
   try {
     const token = req.session.accessToken;
     const siteId = req.session.spSiteId;
@@ -163,15 +158,13 @@ router.get("/settings", async (req, res) => {
     const data = await settings.getSettings(token, siteId);
     res.json(data);
   } catch (e) {
+    console.error("Get settings error:", e);
     res.json({});
   }
 });
 
-// POST /api/settings — save rate defaults
-router.post("/settings", async (req, res) => {
-  if (!req.session || !req.session.accessToken) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
+// POST /api/settings — save rate defaults (admin only)
+router.post("/settings", requireAuth, requireAdmin, async (req, res) => {
   try {
     const token = req.session.accessToken;
     const siteId = req.session.spSiteId;
@@ -179,7 +172,8 @@ router.post("/settings", async (req, res) => {
     await settings.saveSettings(token, siteId, req.body);
     res.json({ ok: true });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    console.error("Save settings error:", e);
+    res.status(500).json({ error: "An unexpected error occurred. Please try again." });
   }
 });
 

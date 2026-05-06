@@ -35,7 +35,10 @@ async function getSettings(token, siteId) {
 async function saveSettings(token, siteId, data) {
   const listId = await getSettingsListId(token, siteId);
   if (!listId) throw new Error("Travel Settings list not found");
-  const n = (v) => (v === "" || v == null) ? null : parseFloat(v) || null;
+  const n = (v) => {
+    const f = parseFloat(v);
+    return (!isNaN(f) && f >= 0 && f <= 999) ? f : null;
+  };
   const fields = {
     MealBreakfastRate: n(data.mealBreakfastRate),
     MealLunchRate:     n(data.mealLunchRate),

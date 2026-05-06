@@ -3,6 +3,7 @@ const router = express.Router();
 const { getAuthUrl, acquireTokenByCode } = require("../services/graph");
 
 const REDIRECT_URI = process.env.REDIRECT_URI;
+const SP_ORIGIN = process.env.SP_ORIGIN || "https://cityofnorthplattene.sharepoint.com";
 
 // GET /auth/signin — redirect user to Microsoft login
 router.get("/signin", async (req, res) => {
@@ -35,8 +36,10 @@ router.get("/callback", async (req, res) => {
     };
     req.session.accessToken = result.accessToken;
 
-    const returnTo = req.session.returnTo || "/forms/travel-expense";
+    const rawReturnTo = req.session.returnTo || "/forms/travel-expense";
     delete req.session.returnTo;
+    // Only allow relative paths to prevent open-redirect
+    const safeReturnTo = /^\/[^/\\]/.test(rawReturnTo) ? rawReturnTo : "/forms/travel-expense";
 
     // If we're in a popup (embedded mode), send a page that closes itself
     // and tells the parent frame to reload
@@ -48,10 +51,10 @@ router.get("/callback", async (req, res) => {
           <p>Signed in! This window will close...</p>
           <script>
             if (window.opener) {
-              window.opener.postMessage({ type: "auth-complete" }, "*");
+              window.opener.postMessage({ type: "auth-complete" }, ${JSON.stringify(SP_ORIGIN)});
               window.close();
             } else {
-              window.location.href = "${returnTo}";
+              window.location.href = ${JSON.stringify(safeReturnTo)};
             }
           </script>
         </body>
@@ -59,10 +62,10 @@ router.get("/callback", async (req, res) => {
       `);
     }
 
-    res.redirect(returnTo);
+    res.redirect(safeReturnTo);
   } catch (err) {
     console.error("Token exchange error:", err);
-    res.status(500).send("Sign-in failed: " + err.message);
+    res.status(500).send("Sign-in failed. Please try again.");
   }
 });
 
