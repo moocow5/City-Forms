@@ -14,6 +14,11 @@
     .card { box-shadow: var(--shadow-sm); }
   </style>
   <% } %>
+  <style>
+    .currency-wrap { position: relative; display: flex; align-items: center; width: 100%; }
+    .currency-wrap::before { content: "$"; position: absolute; left: 7px; color: #555; font-size: 13px; pointer-events: none; z-index: 1; }
+    .currency-wrap input { padding-left: 18px !important; width: 100%; }
+  </style>
 </head>
 <body>
 
@@ -151,24 +156,24 @@
         <div class="cost-row">
           <div class="row-label">Registration</div>
           <div></div><div></div>
-          <input id="regCheck" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="regCheck" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
         <div class="cost-row">
           <div class="row-label">Commercial Travel</div>
           <div></div><div></div>
-          <input id="travelCheck" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="travelCheck" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
         <div class="cost-row">
           <div class="row-label">Lodging</div>
           <input id="lodgingNights" data-field type="text" placeholder="# nights">
           <input id="lodgingRate" data-field type="text" placeholder="rate/night">
-          <input id="lodgingTotal" data-field type="text" class="total-field" placeholder="0.00" readonly>
+          <div class="currency-wrap"><input id="lodgingTotal" data-field type="text" class="total-field" placeholder="0.00" readonly></div>
         </div>
         <div class="cost-row">
           <div class="row-label">Mileage</div>
           <input id="mileageMiles" data-field type="text" placeholder="# miles">
           <input id="mileageRate" data-field type="text" placeholder="rate/mile">
-          <input id="mileageTotal" data-field type="text" class="total-field" placeholder="0.00" readonly>
+          <div class="currency-wrap"><input id="mileageTotal" data-field type="text" class="total-field" placeholder="0.00" readonly></div>
         </div>
 
         <!-- Other expenses header -->
@@ -178,27 +183,27 @@
         <div class="cost-row">
           <div class="row-label">Other</div>
           <input id="other1Desc" data-field type="text" placeholder="Description" style="grid-column:2/4">
-          <input id="other1Total" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="other1Total" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
         <div class="cost-row">
           <div class="row-label"></div>
           <input id="other2Desc" data-field type="text" placeholder="Description" style="grid-column:2/4">
-          <input id="other2Total" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="other2Total" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
         <div class="cost-row">
           <div class="row-label"></div>
           <input id="other3Desc" data-field type="text" placeholder="Description" style="grid-column:2/4">
-          <input id="other3Total" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="other3Total" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
         <div class="cost-row">
           <div class="row-label"></div>
           <input id="other4Desc" data-field type="text" placeholder="Description" style="grid-column:2/4">
-          <input id="other4Total" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="other4Total" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
         <div class="cost-row">
           <div class="row-label"></div>
           <input id="other5Desc" data-field type="text" placeholder="Description" style="grid-column:2/4">
-          <input id="other5Total" data-field type="text" class="total-field" placeholder="0.00">
+          <div class="currency-wrap"><input id="other5Total" data-field type="text" class="total-field" placeholder="0.00"></div>
         </div>
 
         <!-- Meals header -->
@@ -215,19 +220,19 @@
           <div class="row-label">Breakfast</div>
           <input id="breakfast" data-field type="text" placeholder="#">
           <input id="breakfastRate" data-field type="text" placeholder="per diem rate">
-          <input id="breakfastTotal" data-field type="text" class="total-field" placeholder="0.00" readonly>
+          <div class="currency-wrap"><input id="breakfastTotal" data-field type="text" class="total-field" placeholder="0.00" readonly></div>
         </div>
         <div class="meal-row">
           <div class="row-label">Lunch</div>
           <input id="lunch" data-field type="text" placeholder="#">
           <input id="lunchRate" data-field type="text" placeholder="per diem rate">
-          <input id="lunchTotal" data-field type="text" class="total-field" placeholder="0.00" readonly>
+          <div class="currency-wrap"><input id="lunchTotal" data-field type="text" class="total-field" placeholder="0.00" readonly></div>
         </div>
         <div class="meal-row">
           <div class="row-label">Supper</div>
           <input id="supper" data-field type="text" placeholder="#">
           <input id="supperRate" data-field type="text" placeholder="per diem rate">
-          <input id="supperTotal" data-field type="text" class="total-field" placeholder="0.00" readonly>
+          <div class="currency-wrap"><input id="supperTotal" data-field type="text" class="total-field" placeholder="0.00" readonly></div>
         </div>
 
         <div class="total-bar">

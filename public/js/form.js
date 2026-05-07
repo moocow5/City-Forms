@@ -233,6 +233,17 @@ function startNewRequest() {
   if (dept) { dept.focus(); dept.scrollIntoView({ behavior: "smooth", block: "center" }); }
 }
 
+// ── Format editable currency fields to 2 decimal places on blur ──
+['regCheck','travelCheck','other1Total','other2Total','other3Total','other4Total','other5Total']
+  .forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('blur', () => {
+      const n = parseFloat(el.value);
+      if (!isNaN(n) && n !== 0) el.value = n.toFixed(2);
+    });
+  });
+
 // ── Clear form ──
 function clearForm() {
   document.querySelectorAll("[data-field]").forEach((el) => { el.value = ""; });
