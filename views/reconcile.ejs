@@ -14,6 +14,11 @@
     .card { box-shadow: var(--shadow-sm); }
   </style>
   <% } %>
+  <style>
+    .currency-wrap { position: relative; display: inline-flex; align-items: center; }
+    .currency-wrap::before { content: "$"; position: absolute; left: 7px; color: #555; font-size: 13px; pointer-events: none; z-index: 1; }
+    .currency-wrap input { padding-left: 18px !important; }
+  </style>
 </head>
 <body>
 
@@ -173,7 +178,7 @@
             <td class="row-label">Registration</td>
             <td class="est-cell"><span id="est_reg">—</span></td>
             <td>
-              <input id="reg2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()">
+              <div class="currency-wrap"><input id="reg2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()"></div>
             </td>
             <td class="var-cell"><span id="var_reg" class="var-zero">—</span></td>
             <td><input id="regPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px" oninput="recalcAll()"></td>
@@ -184,7 +189,7 @@
             <td class="row-label">Commercial Travel</td>
             <td class="est-cell"><span id="est_travel">—</span></td>
             <td>
-              <input id="travel2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()">
+              <div class="currency-wrap"><input id="travel2" data-field type="text" class="total-field" placeholder="0.00" oninput="recalcAll()"></div>
             </td>
             <td class="var-cell"><span id="var_travel" class="var-zero">—</span></td>
             <td><input id="travelPO" data-field type="text" placeholder="PO #" style="width:90px;font-size:12px" oninput="recalcAll()"></td>
@@ -198,7 +203,7 @@
               <div style="display:flex;gap:4px">
                 <input id="lodgingNights2" data-field type="text" placeholder="nights" style="width:60px" oninput="recalcLodging()">
                 <input id="lodgingRate2" data-field type="text" placeholder="rate" style="width:70px" oninput="recalcLodging()">
-                <input id="lodgingTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly style="width:80px">
+                <div class="currency-wrap"><input id="lodgingTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly style="width:80px"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_lodging" class="var-zero">—</span></td>
@@ -213,7 +218,7 @@
               <div style="display:flex;gap:4px">
                 <input id="mileageMiles2" data-field type="text" placeholder="miles" style="width:60px" oninput="recalcMileage()">
                 <input id="mileageRate2" data-field type="text" placeholder="rate" style="width:70px" oninput="recalcMileage()">
-                <input id="mileageTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly style="width:80px">
+                <div class="currency-wrap"><input id="mileageTotal2" data-field type="text" class="total-field" placeholder="0.00" readonly style="width:80px"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_mileage" class="var-zero">—</span></td>
@@ -234,7 +239,7 @@
             <td>
               <div style="display:flex;gap:4px">
                 <input id="other1Desc2" data-field type="text" placeholder="Description" style="flex:1">
-                <input id="other1Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+                <div class="currency-wrap"><input id="other1Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_other1" class="var-zero">—</span></td>
@@ -248,7 +253,7 @@
             <td>
               <div style="display:flex;gap:4px">
                 <input id="other2Desc2" data-field type="text" placeholder="Description" style="flex:1">
-                <input id="other2Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+                <div class="currency-wrap"><input id="other2Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_other2" class="var-zero">—</span></td>
@@ -262,7 +267,7 @@
             <td>
               <div style="display:flex;gap:4px">
                 <input id="other3Desc2" data-field type="text" placeholder="Description" style="flex:1">
-                <input id="other3Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+                <div class="currency-wrap"><input id="other3Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_other3" class="var-zero">—</span></td>
@@ -276,7 +281,7 @@
             <td>
               <div style="display:flex;gap:4px">
                 <input id="other4Desc2" data-field type="text" placeholder="Description" style="flex:1">
-                <input id="other4Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+                <div class="currency-wrap"><input id="other4Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_other4" class="var-zero">—</span></td>
@@ -290,7 +295,7 @@
             <td>
               <div style="display:flex;gap:4px">
                 <input id="other5Desc2" data-field type="text" placeholder="Description" style="flex:1">
-                <input id="other5Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()">
+                <div class="currency-wrap"><input id="other5Total2" data-field type="text" class="total-field" placeholder="0.00" style="width:80px" oninput="recalcAll()"></div>
               </div>
             </td>
             <td class="var-cell"><span id="var_other5" class="var-zero">—</span></td>
@@ -358,7 +363,7 @@
             <td style="font-weight:700;color:var(--brand)">Totals</td>
             <td class="est-cell" style="font-weight:700"><span id="est_total">—</span></td>
             <td>
-              <input id="totalExpense" data-field type="text" class="total-field" readonly style="font-weight:700;border-color:var(--brand);color:var(--brand)">
+              <div class="currency-wrap"><input id="totalExpense" data-field type="text" class="total-field" readonly style="font-weight:700;border-color:var(--brand);color:var(--brand)"></div>
             </td>
             <td class="var-cell" style="font-weight:700"><span id="var_total" class="var-zero">—</span></td>
             <td></td>
@@ -370,16 +375,16 @@
       <div class="form-grid" style="margin-top:20px">
         <div class="form-group">
           <label>Less: Amounts Paid Direct ($) <span style="font-size:11px;color:var(--gray-400);font-weight:400">(auto-calculated from PO lines)</span></label>
-          <input id="amountPaid" data-field type="text" placeholder="0.00" readonly style="background:var(--gray-50)">
+          <div class="currency-wrap"><input id="amountPaid" data-field type="text" placeholder="0.00" readonly style="background:var(--gray-50)"></div>
         </div>
         <div class="form-group">
           <label>Less: Advance Money ($) <span style="font-size:11px;color:var(--gray-400);font-weight:400">(advance + meal PO lines)</span></label>
-          <input id="advanceMoney2" data-field type="text" placeholder="0.00" readonly style="background:var(--gray-50)">
+          <div class="currency-wrap"><input id="advanceMoney2" data-field type="text" placeholder="0.00" readonly style="background:var(--gray-50)"></div>
         </div>
         <div class="form-group full" style="margin-top:8px">
           <label style="font-size:13px;color:var(--brand)">Amount Due Employee or (Refund)</label>
-          <input id="amountDue" data-field type="text" readonly
-            style="max-width:220px;font-size:16px;font-weight:700;border:2px solid var(--brand);color:var(--brand);background:var(--brand-light);padding:10px 14px;border-radius:6px">
+          <div class="currency-wrap"><input id="amountDue" data-field type="text" readonly
+            style="max-width:220px;font-size:16px;font-weight:700;border:2px solid var(--brand);color:var(--brand);background:var(--brand-light);padding:10px 14px 10px 22px;border-radius:6px"></div>
         </div>
       </div>
 

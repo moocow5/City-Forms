@@ -373,3 +373,13 @@ function clearActuals() {
   $("pdfStatus").innerHTML = "";
 }
 
+// ── Format editable currency fields to 2 decimal places on blur ──
+['reg2','travel2','other1Total2','other2Total2','other3Total2','other4Total2','other5Total2']
+  .forEach(id => {
+    const el = $(id);
+    if (!el) return;
+    el.addEventListener('blur', () => {
+      const n = parseFloat(el.value);
+      if (!isNaN(n) && n !== 0) el.value = n.toFixed(2);
+    });
+  });

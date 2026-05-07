@@ -77,6 +77,26 @@ const FIELD_MAP = {
 // Path to the blank PDF template (user uploads once, stored in /public/templates/)
 const TEMPLATE_DIR = path.join(__dirname, "..", "public", "templates");
 
+const CURRENCY_FIELDS = new Set([
+  'regCheck','travelCheck','lodgingTotal','mileageTotal',
+  'breakfastTotal','lunchTotal','supperTotal',
+  'other1Total','other2Total','other3Total','other4Total','other5Total',
+  'estimatedTotal','totalPrepaid','advanceMoney',
+  'reg2','travel2','lodgingTotal2','mileageTotal2',
+  'breakfastTotal2','lunchTotal2','supperTotal2',
+  'other1Total2','other2Total2','other3Total2','other4Total2','other5Total2',
+  'totalExpense','amountPaid','advanceMoney2','amountDue',
+]);
+
+function fmtPdfValue(key, value) {
+  if (!value && value !== 0) return '';
+  if (CURRENCY_FIELDS.has(key)) {
+    const n = parseFloat(value);
+    return isNaN(n) ? String(value) : `$${n.toFixed(2)}`;
+  }
+  return String(value);
+}
+
 /**
  * Add Other rows 3–5 to a PDF page by deriving positions from the existing
  * "Other total" (row 1) and "Other total 2" (row 2) widgets, then spacing 3
@@ -109,7 +129,7 @@ async function generatePDF(templateName, formData) {
     const value = formData[formKey];
     if (value) {
       try {
-        form.getTextField(pdfFieldName).setText(String(value));
+        form.getTextField(pdfFieldName).setText(fmtPdfValue(formKey, value));
       } catch {
         // Field may not exist in this template version — skip
       }
@@ -170,7 +190,7 @@ async function generateReconcilePDF(formData) {
     const value = formData[formKey];
     if (value) {
       try {
-        form.getTextField(pdfFieldName).setText(String(value));
+        form.getTextField(pdfFieldName).setText(fmtPdfValue(formKey, value));
       } catch {
         // Field not in this template version — skip
       }
