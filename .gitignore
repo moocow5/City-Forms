@@ -8,3 +8,4 @@ certs/
 *.cer
 *.pem
 *.key
+logs/
