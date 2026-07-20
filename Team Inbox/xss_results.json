@@ -1,0 +1,15 @@
+{
+  "Module": "XssScanner",
+  "Target": "http://172.30.2.55:3000",
+  "Timestamp": "2026-05-06 13:19:54",
+  "Findings": [
+    {
+      "Timestamp": "2026-05-06 13:19:54",
+      "Module": "XssScanner",
+      "TestName": "No Content-Security-Policy Header",
+      "Severity": "High",
+      "Evidence": "CSP header absent \u2014 XSS attacks have no browser-level mitigation",
+      "Remediation": "Add CSP: Content-Security-Policy: default-src 'self'; script-src 'self'. Use helmet.contentSecurityPolicy()."
+    }
+  ]
+}

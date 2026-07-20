@@ -1,0 +1,55 @@
+﻿{
+    "Module":  "HeaderAudit",
+    "Target":  "http://172.30.2.55:3000",
+    "Timestamp":  "2026-05-06 13:13:46",
+    "Findings":  [
+                     {
+                         "Timestamp":  "2026-05-06 13:13:46",
+                         "Module":  "HeaderAudit",
+                         "TestName":  "Missing Header: Strict-Transport-Security",
+                         "Severity":  "High",
+                         "Evidence":  "Header \u0027Strict-Transport-Security\u0027 not present in response",
+                         "Remediation":  "Add HSTS: res.setHeader(\u0027Strict-Transport-Security\u0027,\u0027max-age=31536000; includeSubDomains\u0027). Or use helmet()."
+                     },
+                     {
+                         "Timestamp":  "2026-05-06 13:13:46",
+                         "Module":  "HeaderAudit",
+                         "TestName":  "Missing Header: Content-Security-Policy",
+                         "Severity":  "High",
+                         "Evidence":  "Header \u0027Content-Security-Policy\u0027 not present in response",
+                         "Remediation":  "Define a CSP policy. Minimum: default-src \u0027self\u0027. Use helmet.contentSecurityPolicy()."
+                     },
+                     {
+                         "Timestamp":  "2026-05-06 13:13:46",
+                         "Module":  "HeaderAudit",
+                         "TestName":  "Header Present: X-Frame-Options",
+                         "Severity":  "Info",
+                         "Evidence":  "X-Frame-Options: SAMEORIGIN",
+                         "Remediation":  "Verify value meets policy requirements."
+                     },
+                     {
+                         "Timestamp":  "2026-05-06 13:13:46",
+                         "Module":  "HeaderAudit",
+                         "TestName":  "Header Present: X-Content-Type-Options",
+                         "Severity":  "Info",
+                         "Evidence":  "X-Content-Type-Options: nosniff",
+                         "Remediation":  "Verify value meets policy requirements."
+                     },
+                     {
+                         "Timestamp":  "2026-05-06 13:13:46",
+                         "Module":  "HeaderAudit",
+                         "TestName":  "Header Present: Referrer-Policy",
+                         "Severity":  "Info",
+                         "Evidence":  "Referrer-Policy: no-referrer",
+                         "Remediation":  "Verify value meets policy requirements."
+                     },
+                     {
+                         "Timestamp":  "2026-05-06 13:13:46",
+                         "Module":  "HeaderAudit",
+                         "TestName":  "Missing Header: Permissions-Policy",
+                         "Severity":  "Low",
+                         "Evidence":  "Header \u0027Permissions-Policy\u0027 not present in response",
+                         "Remediation":  "Add Permissions-Policy header to restrict browser feature access (camera, mic, geolocation)."
+                     }
+                 ]
+}
