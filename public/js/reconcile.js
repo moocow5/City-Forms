@@ -196,6 +196,7 @@ async function pullIntoForm() {
     enableSaveBtn(false);
     $("tripSummaryCard").style.display = "none";
     $("varianceCard").style.display = "none";
+    $("employeeNameBanner").style.display = "none";
     status.innerHTML = "";
     return;
   }
@@ -211,6 +212,13 @@ async function pullIntoForm() {
     // Populate read-only trip summary
     sv("department",   fd.department   || "");
     sv("employeeName", fd.employeeName || "");
+    const nameBanner = $("employeeNameBanner");
+    if (fd.employeeName) {
+      nameBanner.textContent = fd.employeeName;
+      nameBanner.style.display = "block";
+    } else {
+      nameBanner.style.display = "none";
+    }
     sv("fromDate",     fd.fromDate     || "");
     sv("toDate",       fd.toDate       || "");
     sv("purpose",      fd.purpose      || "");
