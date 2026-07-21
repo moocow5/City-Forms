@@ -1,4 +1,4 @@
-const { PDFDocument } = require("pdf-lib");
+const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 const fs = require("fs/promises");
 const path = require("path");
 
@@ -195,6 +195,20 @@ async function generateReconcilePDF(formData) {
         // Field not in this template version — skip
       }
     }
+  }
+
+  // Print the employee name just above the "ACTUAL EXPENSES" header bar on page 2
+  if (formData.employeeName) {
+    const page2 = pdfDoc.getPage(1);
+    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const { height } = page2.getSize();
+    page2.drawText(formData.employeeName, {
+      x: 48,
+      y: height - 93,
+      size: 8,
+      font: helveticaBold,
+      color: rgb(0.059, 0.298, 0.506),
+    });
   }
 
   // Remove page 1 — reconciliation is page 2 only
