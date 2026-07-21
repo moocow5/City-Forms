@@ -197,14 +197,29 @@ async function generateReconcilePDF(formData) {
     }
   }
 
-  // Print the employee name just above the "ACTUAL EXPENSES" header bar on page 2
+  // Print the employee name in the header banner, and again under the signature line
   if (formData.employeeName) {
     const page2 = pdfDoc.getPage(1);
     const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const { height } = page2.getSize();
+
+    // Header banner — sits in the unused space below the subtitle, above "ACTUAL EXPENSES"
+    page2.drawText(`Travel Expense Report for - ${formData.employeeName}`, {
+      x: 40,
+      y: height - 76,
+      size: 12,
+      font: helveticaBold,
+      color: rgb(1, 1, 1),
+    });
+
+    // Printed name under the employee signature line (line sits ~2pt below the
+    // "Department Head_2" field's bottom edge — see generate-template.js layout)
+    const deptHeadWidget = form.getTextField("Department Head_2").acroField.getWidgets()[0];
+    const deptRect = deptHeadWidget.getRectangle();
+    const signatureLineY = deptRect.y - 2;
     page2.drawText(formData.employeeName, {
-      x: 48,
-      y: height - 93,
+      x: 40,
+      y: signatureLineY - 11,
       size: 8,
       font: helveticaBold,
       color: rgb(0.059, 0.298, 0.506),
